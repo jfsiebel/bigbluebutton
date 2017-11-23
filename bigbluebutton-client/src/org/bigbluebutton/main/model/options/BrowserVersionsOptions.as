@@ -30,6 +30,9 @@ package org.bigbluebutton.main.model.options {
 		[Bindable]
 		public var flash:String = "";
 
+		[Bindable]
+		public var java:String = "";
+
 		public function BrowserVersionsOptions() {
 			name = "browserVersions";
 		}

@@ -4,13 +4,9 @@ const humanizeSeconds = (time) => {
   return [
     minutes,
     seconds,
-  ].map((x) => {
-    if (x < 10) {
-      return `0${x}`;
-    }
-    return x;
-  },
-  ).join(':');
+  ].map(x => (x < 10) ? `0${x}` : x).join(':');
 };
 
-export default humanizeSeconds;
+export {
+  humanizeSeconds,
+};

@@ -35,8 +35,7 @@ else
                         			TRANSLATION=$(curl -L --user "$USER":"$PW" -X GET "https://www.transifex.com/api/2/project/bigbluebutton-html5/resource/enjson/translation/$LOCALE/?mode=onlytranslated&file")
                         			NO_EMPTY_STRINGS=$(echo "$TRANSLATION" | sed '/: \"\"/D' | sed '/}$/D')
                         			NO_TRAILING_COMMA=$(echo "$NO_EMPTY_STRINGS" | sed  '$ s/,$//')
-                        			echo "$NO_TRAILING_COMMA" > ./private/locales/"$LOCALE".json
-                        			echo -e "\n}\n" >> ./private/locales/"$LOCALE".json
+                        			echo -e "$NO_TRAILING_COMMA\n}\n" > ./private/locales/"$LOCALE".json
 						echo -e "Added translation file $LOCALE.json : ${GREEN}✓${NC}"
                 			done
         			else
@@ -47,8 +46,7 @@ else
                 			else
                         			NO_EMPTY_STRINGS=$(echo "$TRANSLATION" | sed '/: \"\"/D' | sed '/}$/D')
                         			NO_TRAILING_COMMA=$(echo "$NO_EMPTY_STRINGS" | sed  '$ s/,//')
-                        			echo "$NO_TRAILING_COMMA" > ./private/locales/"$ARG".json
-                        			echo -e "\n}\n" >> ./private/locales/"$ARG".json
+                        			echo -e "$NO_TRAILING_COMMA\n}\n" > ./private/locales/"$ARG".json
 						echo -e "Added translation file $ARG.json :${GREEN} ✓${NC}"
                 			fi
         			fi

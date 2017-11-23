@@ -40,8 +40,9 @@ package org.bigbluebutton.modules.layout.model {
     
 		private var _layoutsPerRole:Dictionary = new Dictionary();
 		
-		static private var _ignoredWindows:Array = new Array("ScreensharePublishWindow", "ScreenshareViewWindow",
-			"LogWindow", "NetworkStatsWindow", "ShortcutHelpWindow");
+		static private var _ignoredWindows:Array = new Array("AvatarWindow", "PublishWindow", 
+				"VideoWindow", "ScreensharePublishWindow", "ScreenshareViewWindow",
+				"LogWindow", "NetworkStatsWindow", "ShortcutHelpWindow");
 		static private var _roles:Array = new Array(Role.VIEWER, Role.MODERATOR, Role.PRESENTER);
 				
 		private function loadLayout(vxml:XML):void {

@@ -27,12 +27,12 @@
 
 	<fx:Script>
 		<![CDATA[
-			import org.bigbluebutton.core.PopUpUtil;
+			import mx.managers.PopUpManager;
+
 			import org.bigbluebutton.util.i18n.ResourceUtil;
 
 			public function removeWindow():void {
-				PopUpUtil.unlockPosition(this);
-				PopUpUtil.removePopUp(this);
+				PopUpManager.removePopUp(this);
 			}
 		]]>
 	</fx:Script>

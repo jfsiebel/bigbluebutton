@@ -1,4 +1,3 @@
 user:
   role_moderator: 'MODERATOR'
   role_viewer: 'VIEWER'
-  role_presenter: 'PRESENTER'

@@ -38,6 +38,7 @@
 
 package org.bigbluebutton.skins {
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Graphics;
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 
@@ -47,6 +48,17 @@ package org.bigbluebutton.skins {
 	import mx.styles.IStyleClient;
 
 	public class TabSkin extends Border {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 *  @private
+		 */
+		private static var cache:Object = {};
 
 		//--------------------------------------------------------------------------
 		//

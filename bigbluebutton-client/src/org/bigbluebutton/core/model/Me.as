@@ -52,8 +52,7 @@ package org.bigbluebutton.core.model
     public var authTokenValid: Boolean = false;
     public var waitingForApproval: Boolean;
     
-	public var breakoutEjectFromAudio : Boolean = false;
-	
+    
     private var _role:String =  "viewer";   
     public function get role():String {
       return _role.toUpperCase();
@@ -85,7 +84,7 @@ package org.bigbluebutton.core.model
     public function myCamSettings():ArrayCollection {
       return _myCamSettings;
     }
-	
+    
     public function applyLockSettings():void {
       var lockSettings:LockSettingsVO = UsersUtil.getLockSettings();
       var amNotModerator:Boolean = !UsersUtil.amIModerator();

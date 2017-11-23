@@ -1,19 +1,13 @@
 @import "/imports/ui/components/user-list/styles.scss";
 @import "/imports/ui/stylesheets/mixins/_scrollable";
-@import "/imports/ui/stylesheets/mixins/focus";
-@import "/imports/ui/stylesheets/variables/_all";
 
 .content {
   @extend %flex-column;
-  flex-grow: 1;
+  flex-grow: 9;
   overflow: hidden;
 }
 
 .scrollableList {
-  @include elementFocus($list-item-bg-hover);
-  @include scrollbox-vertical($user-list-bg);
-}
-
-.list {
-  margin-left: $md-padding-y;
+  @extend %customListFocus;
+  @include scrollbox-vertical();
 }

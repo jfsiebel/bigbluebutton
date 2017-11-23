@@ -1,7 +1,4 @@
-@import "/imports/ui/stylesheets/variables/_all";
-
-$item-bg-focus: $color-blue-lightest;
-$item-border-focus: $color-blue-lighter;
+@import "../../../stylesheets/variables/_all";
 
 .list {
   list-style: none;
@@ -40,26 +37,30 @@ $item-border-focus: $color-blue-lighter;
 }
 
 .item {
-  display: flex;
+  @extend %customListItemFocus;
   flex: 1 1 100%;
   padding: ($line-height-computed / 3) 0;
-  padding-left: ($line-height-computed / 3);
-
-  &:focus {
-    outline: none;
-    border-radius: $border-size;
-    box-shadow: 0 0 0 $border-size $item-border-focus;
-    background-color: $item-bg-focus;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 
   @include mq($small-only) {
     padding: ($line-height-computed / 1.5) 0;
     justify-content: center;
   }
 
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
   &:hover,
   &:focus {
     cursor: pointer;
+    color: $color-primary;
 
     .itemIcon,
     .itemLabel {

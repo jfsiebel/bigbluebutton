@@ -7,7 +7,6 @@
 
 $unread-messages-bg: $color-danger;
 $user-list-text: $color-gray;
-$user-list-bg: $color-off-white;
 
 $user-thumbnail-border: $color-gray-light;
 $user-thumbnail-text: $user-thumbnail-border;
@@ -23,8 +22,6 @@ $sub-name-color: $color-gray-light;
 $user-icons-color: $color-gray-light;
 $user-icons-color-hover: $color-gray;
 
-$list-item-bg-hover: darken($color-off-white, 7%);
-$item-focus-border: $color-blue-lighter;
 
 /* classes for extending
  * ==========
@@ -43,7 +40,7 @@ $item-focus-border: $color-blue-lighter;
   flex-flow: row;
   padding-top: $sm-padding-y;
   padding-bottom: $sm-padding-y;
-  padding-left: $sm-padding-y;
+  margin-top: $sm-padding-y * 2;
   transition: all 0.3s;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -52,17 +49,6 @@ $item-focus-border: $color-blue-lighter;
   &:first-child {
     margin-top: 0;
   }
-
-  &:focus {
-    background-color: $list-item-bg-hover;
-    box-shadow: inset 0 0 0 $border-size $item-focus-border, inset 1px 0 0 1px $item-focus-border;
-    outline: none;
-  }
-
-  &:hover {
-    background-color: $list-item-bg-hover;
-  }
-  
 }
 
 /* Styling
@@ -100,7 +86,6 @@ $item-focus-border: $color-blue-lighter;
 }
 
 .messages {
-  max-height: 30vh;
 }
 
 .participants {

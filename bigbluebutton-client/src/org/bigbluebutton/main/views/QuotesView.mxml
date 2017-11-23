@@ -59,7 +59,7 @@ with BigBlueButton; if not, see <http://www.gnu.org/licenses/>.
 					quote = "Research is creating new knowledge."
 				}
 				if (StringUtils.isEmpty(attribution)) {
-					attribution = "Neil Armstrong"
+					quote = "Neil Armstrong"
 				}
 				quoteLabel.text = "“ " + quote + " ”";
 				quoteAttribution.text = attribution;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import PropTypes from 'prop-types';
 import { defineMessages } from 'react-intl';
 import cx from 'classnames';
@@ -95,6 +95,7 @@ const intlMessages = defineMessages({
 });
 
 class UserParticipants extends Component {
+
   constructor() {
     super();
 
@@ -103,15 +104,11 @@ class UserParticipants extends Component {
 
   componentDidMount() {
     if (!this.props.compact) {
-      this.refScrollContainer.addEventListener(
-        'keydown',
-        event => this.props.rovingIndex(
-          event,
+      this.refScrollContainer.addEventListener('keydown',
+        event => this.props.rovingIndex(event,
           this.refScrollContainer,
           this.refScrollItems,
-          this.props.users.length,
-        ),
-      );
+          this.props.users.length));
     }
   }
 
@@ -188,29 +185,32 @@ class UserParticipants extends Component {
             <div className={styles.smallTitle} role="banner">
               {intl.formatMessage(intlMessages.usersTitle)}
               &nbsp;({users.length})
-            </div> : <hr className={styles.separator} />
+          </div> : <hr className={styles.separator} />
         }
         <div
           className={styles.scrollableList}
           role="tabpanel"
           tabIndex={0}
+          refScrollContainer
           ref={(ref) => { this.refScrollContainer = ref; }}
         >
-          <div ref={(ref) => { this.refScrollItems = ref; }} className={styles.list}>
-            <TransitionGroup>
-              { users.map(user => (
-                <CSSTransition
-                  classNames={listTransition}
-                  appear
-                  enter
-                  exit
-                  timeout={0}
-                  component="div"
-                  className={cx(styles.participantsList)}
-                  key={user.id}
-                >
+          <CSSTransitionGroup
+            transitionName={listTransition}
+            transitionAppear
+            transitionEnter
+            transitionLeave
+            transitionAppearTimeout={0}
+            transitionEnterTimeout={0}
+            transitionLeaveTimeout={0}
+            component="div"
+            className={cx(styles.participantsList, styles.scrollableList)}
+          >
+            <div ref={(ref) => { this.refScrollItems = ref; }}>
+              {
+                users.map(user => (
                   <UserListItem
                     compact={compact}
+                    key={user.id}
                     isBreakoutRoom={isBreakoutRoom}
                     user={user}
                     currentUser={currentUser}
@@ -221,10 +221,10 @@ class UserParticipants extends Component {
                     isMeetingLocked={isMeetingLocked}
                     getScrollContainerRef={this.getScrollContainerRef}
                   />
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
-          </div>
+                ))
+              }
+            </div>
+          </CSSTransitionGroup>
         </div>
       </div>
     );

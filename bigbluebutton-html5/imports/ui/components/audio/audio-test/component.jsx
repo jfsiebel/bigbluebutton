@@ -1,36 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Button from '/imports/ui/components/button/component';
-import { defineMessages, intlShape, injectIntl } from 'react-intl';
 import styles from './styles.scss';
-
-const propTypes = {
-  intl: intlShape.isRequired,
-  handlePlayAudioSample: PropTypes.func.isRequired,
-  outputDeviceId: PropTypes.string,
-};
-
-const defaultProps = {
-  outputDeviceId: null,
-};
-
-const intlMessages = defineMessages({
-  playSoundLabel: {
-    id: 'app.audio.playSoundLabel',
-    description: 'Play sound button label',
-  },
-});
+import { defineMessages, injectIntl } from 'react-intl';
 
 class AudioTest extends React.Component {
   constructor(props) {
     super(props);
-
-    this.handlePlayAudioSample = props.handlePlayAudioSample.bind(this);
   }
 
   render() {
     const {
-      outputDeviceId,
       intl,
     } = this.props;
 
@@ -41,13 +20,17 @@ class AudioTest extends React.Component {
         icon={'unmute'}
         size={'sm'}
         color={'primary'}
-        onClick={() => this.handlePlayAudioSample(outputDeviceId)}
+        onClick={this.props.handlePlayAudioSample}
       />
     );
   }
 }
 
-AudioTest.propTypes = propTypes;
-AudioTest.defaultProps = defaultProps;
+const intlMessages = defineMessages({
+  playSoundLabel: {
+    id: 'app.audio.playSoundLabel',
+    description: 'Play sound button label',
+  },
+});
 
 export default injectIntl(AudioTest);

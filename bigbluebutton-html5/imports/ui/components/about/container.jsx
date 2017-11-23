@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import AboutComponent from './component';
 
-const AboutContainer = props => (
-  <AboutComponent {...props}>
-    {props.children}
-  </AboutComponent>
-);
+class AboutContainer extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <AboutComponent {...this.props}>
+        {this.props.children}
+      </AboutComponent>
+    );
+  }
+}
 
 const getClientBuildInfo = function () {
   return {

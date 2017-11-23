@@ -1,31 +1,28 @@
-/* eslint react/jsx-filename-extension: 0 */
-import React from 'react';
-import _ from 'lodash';
-import { toast } from 'react-toastify';
+import { check } from 'meteor/check';
 
-import Toast from '/imports/ui/components/toast/component';
+const collection = new Mongo.Collection(null);
 
-let lastToast = {
-  id: null,
-  message: null,
-  type: null,
-  icon: null,
-};
-
-export function notify(message, type = 'default', icon, options) {
-  const settings = {
-    type,
-    ...options,
-  };
-
-  const { id: lastToastId, ...lastToastProps } = lastToast;
-  const toastProps = { message, type, icon };
-
-  if (!toast.isActive(lastToast.id) || !_.isEqual(lastToastProps, toastProps)) {
-    const id = toast(<Toast {...toastProps} />, settings);
-
-    lastToast = { id, ...toastProps };
-  }
+function findById(notificationId) {
+  check(notificationId, String);
+  collection.find({ notificationId });
 }
 
-export default { notify };
+function add(notification) {
+  check(notification.notification, String);
+  collection.insert(notification);
+}
+
+function remove(notificationId) {
+  check(notificationId, String);
+  collection.remove({ notificationId });
+}
+
+const NotificationCollection = { findById, add, remove };
+
+export default NotificationCollection;
+
+export {
+    findById,
+    add,
+    remove,
+};

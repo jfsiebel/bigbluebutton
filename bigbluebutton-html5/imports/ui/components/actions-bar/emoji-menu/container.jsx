@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import EmojiService from './service';
-import EmojiMenu from './component';
+import EmojiMenu from './component.jsx';
 
 const propTypes = {
   // Emoji status of the current user
@@ -11,9 +11,22 @@ const propTypes = {
   actions: PropTypes.object.isRequired,
 };
 
-const EmojiContainer = ({ userEmojiStatus, actions }) => (
-  <EmojiMenu userEmojiStatus={userEmojiStatus} actions={actions} />
-);
+class EmojiContainer extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const {
+      userEmojiStatus,
+      actions,
+    } = this.props;
+
+    return (
+      <EmojiMenu userEmojiStatus={userEmojiStatus} actions={actions} />
+    );
+  }
+}
 
 export default createContainer(() => {
   const data = EmojiService.getEmojiData();

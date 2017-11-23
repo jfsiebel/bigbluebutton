@@ -37,6 +37,7 @@ object VoiceUsers {
     } yield {
       val vu = u.modify(_.muted).setTo(muted)
         .modify(_.talking).setTo(false)
+        .modify(_.listenOnly).setTo(false)
       users.save(vu)
       vu
     }
@@ -48,6 +49,7 @@ object VoiceUsers {
     } yield {
       val vu = u.modify(_.muted).setTo(false)
         .modify(_.talking).setTo(talkng)
+        .modify(_.listenOnly).setTo(false)
       users.save(vu)
       vu
     }
@@ -59,6 +61,7 @@ object VoiceUsers {
     } yield {
       val vu = u.modify(_.muted).setTo(true)
         .modify(_.talking).setTo(false)
+        .modify(_.listenOnly).setTo(true)
       users.save(vu)
       vu
     }
@@ -70,6 +73,7 @@ object VoiceUsers {
     } yield {
       val vu = u.modify(_.muted).setTo(false)
         .modify(_.talking).setTo(false)
+        .modify(_.listenOnly).setTo(false)
       users.save(vu)
       vu
     }
