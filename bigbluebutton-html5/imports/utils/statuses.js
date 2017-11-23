@@ -12,15 +12,13 @@ const EMOJI_STATUSES = {
 };
 
 const EMOJI_NORMALIZE = {
-  away: 'time',
-  raiseHand: 'hand',
-  neutral: 'undecided',
-  confused: 'confused',
-  sad: 'sad',
-  happy: 'happy',
-  applause: 'applause',
+  agree: 'thumbs_up',
+  disagree: 'thumbs_down',
   thumbsUp: 'thumbs_up',
   thumbsDown: 'thumbs_down',
+  raiseHand: 'hand',
+  away: 'time',
+  neutral: 'undecided',
 };
 
 export { EMOJI_STATUSES, EMOJI_NORMALIZE };

@@ -1,9 +1,19 @@
-import React from 'react';
-import styles from './styles';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import styles from './styles.scss';
 
-const RecordingIndicator = ({ beingRecorded }) => {
-  if (!beingRecorded) return null;
-  return <div className={styles.indicator} />;
-};
+export default class RecordingIndicator extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-export default RecordingIndicator;
+  render() {
+    const { beingRecorded } = this.props;
+
+    if (!beingRecorded) {
+      return null;
+    }
+
+    return (<div className={styles.indicator} />);
+  }
+}

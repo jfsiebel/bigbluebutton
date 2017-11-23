@@ -37,11 +37,8 @@ $btn-jumbo-padding: $jumbo-padding-y $jumbo-padding-x;
  * ==========
  */
 .button {
-  border: none;
-  outline: none;
-  overflow: visible;
-  display: inline-block;
-  border-radius: $border-size;
+  @extend %btnFocus;
+
   font-weight: $btn-font-weight;
   line-height: 1.5;
   text-align: center;
@@ -72,17 +69,14 @@ $btn-jumbo-padding: $jumbo-padding-y $jumbo-padding-x;
   &:active {
     &:focus {
       span:first-of-type::before {
-        border-radius: $border-size;
+        border-radius: $focus-border-size;
       }
     }
   }
 }
 
 .buttonWrapper {
-  border: none;
-  overflow: visible !important;
-  display: inline-block;
-  outline: none;
+  @extend %btnFocus;
 
   &,
   &:active {
@@ -99,13 +93,6 @@ $btn-jumbo-padding: $jumbo-padding-y $jumbo-padding-x;
   vertical-align: middle;
   background: none;
   padding: 0 !important;
-
-  &[aria-disabled="true"] {
-    cursor: not-allowed;
-    opacity: .65;
-    box-shadow: none;
-    pointer-events: none;
-  }
 }
 
 .label {
@@ -169,24 +156,30 @@ $btn-jumbo-padding: $jumbo-padding-y $jumbo-padding-x;
 
   color: $color;
   background-color: $background;
-  border: $border-size-large solid transparent;
-
-  &:focus,
-  .buttonWrapper:focus & {
-    outline: none !important;
-    color: $color;
-    background-color: $background;
-    background-clip: padding-box;
-    border: $border-size-large solid transparent;
-    box-shadow: 0 0 0 $border-size $border;
-  }
+  border-color: $border;
 
   &:hover,
-  .buttonWrapper:hover & {
+  &:focus,
+  .buttonWrapper:hover &,
+  .buttonWrapper:focus & {
     color: $color;
     background-color: $active-background;
     border-color: $active-border;
-    border: $border-size-large solid transparent;
+  }
+
+  &:active,
+  .buttonWrapper:active & {
+    color: $color;
+    background-color: $active-background;
+    border-color: $active-border;
+    background-image: none;
+
+    &:hover,
+    &:focus {
+      color: $color;
+      background-color: darken($background, 17%);
+      border-color: darken($border, 25%);
+    }
   }
 }
 
@@ -194,29 +187,34 @@ $btn-jumbo-padding: $jumbo-padding-y $jumbo-padding-x;
   color: $color;
   background-image: none;
   background-color: transparent;
-  border: $border-size-large solid transparent;
+  border-color: $color;
 
   &:focus,
+  &:hover,
+  .buttonWrapper:hover &,
   .buttonWrapper:focus & {
-    color: $color;
-    outline: none !important;
-    background-color: $variant;
-    background-clip: padding-box;
-    border: $border-size-large solid transparent;
-    box-shadow: 0 0 0 $border-size $color;
+    color: $variant;
+    background-color: $color;
+    border-color: $color;
   }
 
-  &:hover,
-  .buttonWrapper:hover & {
-    color: $color;
-    background-color: $variant;
-    border-color: $variant;
-    border: $border-size-large solid transparent;
+  &:active,
+  .buttonWrapper:active & {
+    color: $variant;
+    background-color: $color;
+    border-color: $color;
+
+    &:hover,
+    &:focus {
+      color: $variant;
+      background-color: darken($color, 17%);
+      border-color: darken($color, 25%);
+    }
   }
 }
 
 .default {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-primary-border);
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
 }
 
 .primary {

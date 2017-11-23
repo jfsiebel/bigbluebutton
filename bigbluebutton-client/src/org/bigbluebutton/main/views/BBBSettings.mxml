@@ -3,8 +3,6 @@
 		xmlns:fx="http://ns.adobe.com/mxml/2009"
 		xmlns:common="org.bigbluebutton.common.*" 
 		xmlns:mate="http://mate.asfusion.com/"
-		implements="org.bigbluebutton.common.IKeyboardClose"
-		show="this.setFocus()"
 		layout="vertical"
 		horizontalAlign="center"
 		showCloseButton="false"
@@ -16,7 +14,6 @@
 			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
 			
-			import org.bigbluebutton.common.IKeyboardClose;
 			import org.bigbluebutton.main.events.BBBEvent;
 			import org.bigbluebutton.util.i18n.ResourceUtil;
 

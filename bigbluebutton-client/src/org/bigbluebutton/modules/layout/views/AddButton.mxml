@@ -34,8 +34,9 @@ with BigBlueButton; if not, see <http://www.gnu.org/licenses/>.
 			import flash.events.Event;
 			
 			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
 			
-			import org.bigbluebutton.core.PopUpUtil;
 			import org.bigbluebutton.core.UsersUtil;
 			import org.bigbluebutton.util.i18n.ResourceUtil;
 
@@ -45,7 +46,8 @@ with BigBlueButton; if not, see <http://www.gnu.org/licenses/>.
 			}
 			
 			private function onClick(e:Event):void {
-				PopUpUtil.createModalPopUp(FlexGlobals.topLevelApplication as DisplayObject, CustomLayoutNameWindow, true);
+				var layoutNameWindow:IFlexDisplayObject = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, CustomLayoutNameWindow, true);
+				PopUpManager.centerPopUp(layoutNameWindow);
 			}
 			
 			public function refreshRole(amIModerator:Boolean):void {

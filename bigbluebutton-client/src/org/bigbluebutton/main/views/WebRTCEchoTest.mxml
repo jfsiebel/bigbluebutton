@@ -24,7 +24,8 @@ with BigBlueButton; if not, see <http://www.gnu.org/licenses/>.
 				xmlns:common="org.bigbluebutton.common.*"
 				width="600" height="380"
 				creationComplete="onCreationComplete()"
-				showCloseButton="false">
+				showCloseButton="false"
+				close="onCancelClicked()">
 	
 	<fx:Declarations>
 		<mate:Listener type="{WebRTCEchoTestStartedEvent.WEBRTC_ECHO_TEST_STARTED}" method="handleWebRTCEchoTestStartedEvent" />
@@ -70,6 +71,10 @@ with BigBlueButton; if not, see <http://www.gnu.org/licenses/>.
 			private var cancelButtonLabel:String = ResourceUtil.getInstance().getString('bbb.micSettings.cancel');
 
 			private var userClosed:Boolean = false;
+			
+			override public function move(x:Number, y:Number):void {
+				return;
+			}
 			
 			private function onCancelClicked():void {
 				stopTimers();

@@ -41,9 +41,8 @@ trait UserJoinedVoiceConfEvtMsgHdlr extends BreakoutHdlrHelpers {
       outGW.send(msgEvent)
     }
 
-    val isListenOnly = if (callerIdName.startsWith("LISTENONLY")) true else false
+    val voiceUserState = VoiceUserState(intId, voiceUserId, callingWith, callerIdName, callerIdNum, muted, talking, listenOnly = false)
 
-    val voiceUserState = VoiceUserState(intId, voiceUserId, callingWith, callerIdName, callerIdNum, muted, talking, listenOnly = isListenOnly)
     VoiceUsers.add(liveMeeting.voiceUsers, voiceUserState)
 
     broadcastEvent(voiceUserState)

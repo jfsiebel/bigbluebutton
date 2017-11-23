@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './styles';
+import styles from './styles.scss';
 
 const propTypes = {
   content: PropTypes.element.isRequired,
   overlay: PropTypes.element,
-};
-
-const defaultProps = {
-  overlay: null,
 };
 
 export default class Media extends Component {
@@ -48,4 +44,3 @@ export default class Media extends Component {
 }
 
 Media.propTypes = propTypes;
-Media.defaultProps = defaultProps;

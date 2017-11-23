@@ -1,8 +1,11 @@
-import React from 'react';
-import cx from 'classnames';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from '../styles';
+import cx from 'classnames';
 
-const DropdownListSeparator = (props, { style, className }) => (
-  <li style={style} className={cx(styles.separator, className)} />);
-
-export default DropdownListSeparator;
+export default class DropdownListSeparator extends Component {
+  render() {
+    const { style, className } = this.props;
+    return <li style={style} className={cx(styles.separator, className)} />;
+  }
+}

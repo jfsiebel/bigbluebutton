@@ -36,7 +36,7 @@ package org.bigbluebutton.modules.screenshare.managers {
     import org.bigbluebutton.modules.screenshare.model.ScreenshareModel;
     import org.bigbluebutton.modules.screenshare.model.ScreenshareOptions;
     import org.bigbluebutton.modules.screenshare.services.ScreenshareService;
-    import org.bigbluebutton.util.browser.BrowserCheck;
+    import org.bigbluebutton.modules.screenshare.utils.BrowserCheck;
 
     public class ScreenshareManager {
         private static const LOGGER:ILogger = getClassLogger(ScreenshareManager);

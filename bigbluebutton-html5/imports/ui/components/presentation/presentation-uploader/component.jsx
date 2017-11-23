@@ -34,67 +34,69 @@ const defaultProps = {
 const intlMessages = defineMessages({
   title: {
     id: 'app.presentationUploder.title',
-    description: 'title of the modal',
+    defaultMessage: 'Presentation',
   },
   message: {
     id: 'app.presentationUploder.message',
-    description: 'message warning the types of files accepted',
+    defaultMessage: `As a presenter in BigBlueButton, you have the ability of
+     uploading any office document or PDF file. We recommend for the best results,
+     to please upload a PDF file.`,
   },
   confirmLabel: {
     id: 'app.presentationUploder.confirmLabel',
-    description: 'used in the button that start the upload of the new presentation',
+    defaultMessage: 'Start',
   },
   confirmDesc: {
     id: 'app.presentationUploder.confirmDesc',
-    description: 'description of the confirm',
+    defaultMessage: 'Save your changes and start the presentation',
   },
   dismissLabel: {
     id: 'app.presentationUploder.dismissLabel',
-    description: 'used in the button that close modal',
+    defaultMessage: 'Cancel',
   },
   dismissDesc: {
     id: 'app.presentationUploder.dismissDesc',
-    description: 'description of the dismiss',
+    defaultMessage: 'Close the modal window and discard your changes',
   },
   dropzoneLabel: {
     id: 'app.presentationUploder.dropzoneLabel',
-    description: 'message warning where drop files for upload',
+    defaultMessage: 'Drag files here to upload',
   },
   browseFilesLabel: {
     id: 'app.presentationUploder.browseFilesLabel',
-    description: 'message use on the file browser',
+    defaultMessage: 'or browse for files',
   },
   fileToUpload: {
     id: 'app.presentationUploder.fileToUpload',
-    description: 'message used in the file selected for upload',
+    defaultMessage: 'To be uploaded...',
   },
   uploadProcess: {
     id: 'app.presentationUploder.upload.progress',
-    description: 'message that indicates the percentage of the upload',
+    defaultMessage: 'Uploading ({progress}%)',
   },
   413: {
     id: 'app.presentationUploder.upload.413',
-    description: 'error that file exceed the size limit',
+    defaultMessage: 'File is too large.',
   },
   conversionProcessingSlides: {
     id: 'app.presentationUploder.conversion.conversionProcessingSlides',
-    description: 'indicates how many slides were converted',
+    defaultMessage: 'Processing page {current} of {total}',
   },
   genericConversionStatus: {
     id: 'app.presentationUploder.conversion.genericConversionStatus',
-    description: 'indicates that file is being converted',
+    defaultMessage: 'Converting file...',
   },
   GENERATING_THUMBNAIL: {
     id: 'app.presentationUploder.conversion.generatingThumbnail',
-    description: 's that it is generating thumbnails',
+    defaultMessage: 'Generating thumbnails...',
   },
   GENERATING_SVGIMAGES: {
     id: 'app.presentationUploder.conversion.generatingSvg',
-    description: 'warns that it is generating svg images',
+    defaultMessage: 'Generating SVG images...',
   },
   GENERATED_SLIDE: {
     id: 'app.presentationUploder.conversion.generatedSlides',
-    description: 'warns that were slides generated',
+    defaultMessage: 'Slides generated...',
   },
 });
 
@@ -298,7 +300,7 @@ class PresentationUploader extends Component {
 
     if (!item.upload.done && !item.upload.error) {
       return intl.formatMessage(intlMessages.uploadProcess, {
-        progress: Math.floor(item.upload.progress).toString(),
+        progress: item.upload.progress,
       });
     }
 

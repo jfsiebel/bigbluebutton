@@ -1,103 +1,11 @@
-/* global PowerQueue */
 import Redis from 'redis';
+import Logger from './logger';
 import { Meteor } from 'meteor/meteor';
 import { EventEmitter2 } from 'eventemitter2';
-import { check } from 'meteor/check';
-import Logger from './logger';
 
-// Fake meetingId used for messages that have no meetingId
-const NO_MEETING_ID = '_';
-
-const makeEnvelope = (channel, eventName, header, body) => {
-  const envelope = {
-    envelope: {
-      name: eventName,
-      routing: {
-        sender: 'bbb-apps-akka',
-        // sender: 'html5-server', // TODO
-      },
-    },
-    core: {
-      header,
-      body,
-    },
-  };
-
-  return JSON.stringify(envelope);
-};
-
-const makeDebugger = enabled => (message) => {
-  if (!enabled) return;
-  Logger.info(`REDIS: ${message}`);
-};
-
-class MettingMessageQueue {
-  constructor(eventEmitter, asyncMessages = [], debug = () => {}) {
-    this.asyncMessages = asyncMessages;
-    this.emitter = eventEmitter;
-    this.queue = new PowerQueue();
-    this.debug = debug;
-
-    this.handleTask = this.handleTask.bind(this);
-    this.queue.taskHandler = this.handleTask;
-  }
-
-  handleTask(data, next) {
-    const { channel } = data;
-    const { envelope } = data.parsedMessage;
-    const { header } = data.parsedMessage.core;
-    const { body } = data.parsedMessage.core;
-    const eventName = header.name;
-    const meetingId = header.meetingId;
-    const isAsync = this.asyncMessages.includes(channel)
-      || this.asyncMessages.includes(eventName);
-
-    let called = false;
-
-    check(eventName, String);
-    check(body, Object);
-
-    const callNext = () => {
-      if (called) return;
-      this.debug(`${eventName} completed ${isAsync ? 'async' : 'sync'}`);
-      called = true;
-      next();
-    };
-
-    const onError = (reason) => {
-      this.debug(`${eventName}: ${reason}`);
-      callNext();
-    };
-
-    try {
-      this.debug(`${eventName} emitted`);
-
-      if (isAsync) {
-        callNext();
-      }
-
-      this.emitter
-        .emitAsync(eventName, { envelope, header, body }, meetingId)
-        .then(callNext)
-        .catch(onError);
-    } catch (reason) {
-      onError(reason);
-    }
-  }
-
-  add(...args) {
-    return this.queue.add(...args);
-  }
-}
+const REQUEST_EVENT = 'get_all_meetings_request';
 
 class RedisPubSub {
-
-  static handlePublishError(err) {
-    if (err) {
-      Logger.error(err);
-    }
-  }
-
   constructor(config = {}) {
     this.config = config;
 
@@ -105,124 +13,109 @@ class RedisPubSub {
     this.pub = Redis.createClient();
     this.sub = Redis.createClient();
     this.emitter = new EventEmitter2();
-    this.mettingsQueues = {};
+    this.queue = new PowerQueue();
 
+    this.handleTask = this.handleTask.bind(this);
     this.handleSubscribe = this.handleSubscribe.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
-    this.debug = makeDebugger(this.config.debug);
   }
 
-  init() {
+  init(config = {}) {
+    this.queue.taskHandler = this.handleTask;
     this.sub.on('psubscribe', Meteor.bindEnvironment(this.handleSubscribe));
     this.sub.on('pmessage', Meteor.bindEnvironment(this.handleMessage));
 
-    const channelsToSubscribe = this.config.subscribeTo;
+    this.queue.reset();
+    this.sub.psubscribe(this.config.channels.fromBBBApps);
+    this.sub.psubscribe(this.config.channels.toBBBApps.html5);
 
-    channelsToSubscribe.forEach((channel) => {
-      this.sub.psubscribe(channel);
-    });
-
-    this.debug(`Subscribed to '${channelsToSubscribe}'`);
+    Logger.info(`Subscribed to '${this.config.channels.fromBBBApps}'`);
   }
 
   updateConfig(config) {
     this.config = Object.assign({}, this.config, config);
-    this.debug = makeDebugger(this.config.debug);
   }
 
+  on(event, listener) {
+    return this.emitter.on(...arguments);
+  }
 
-  // TODO: Move this out of this class, maybe pass as a callback to init?
-  handleSubscribe() {
-    if (this.didSendRequestEvent) return;
-
-    // populate collections with pre-existing data
-    const REDIS_CONFIG = Meteor.settings.redis;
-    const CHANNEL = REDIS_CONFIG.channels.toAkkaApps;
-    const EVENT_NAME = 'GetAllMeetingsReqMsg';
-
-    const body = {
-      requesterId: 'nodeJSapp',
+  publish(channel, eventName, payload = {}, header = {}) {
+    const message = {
+      header: Object.assign({
+        timestamp: new Date().getTime(),
+        name: eventName,
+      }, header),
+      payload,
     };
 
-    this.publishSystemMessage(CHANNEL, EVENT_NAME, body);
-    this.didSendRequestEvent = true;
-  }
-
-  handleMessage(pattern, channel, message) {
-    const parsedMessage = JSON.parse(message);
-    const { name: eventName, meetingId } = parsedMessage.core.header;
-    const { ignored: ignoredMessages, async } = this.config;
-
-    if (ignoredMessages.includes(channel)
-      || ignoredMessages.includes(eventName)) {
-      this.debug(`${eventName} skipped`);
-      return;
-    }
-
-    const queueId = meetingId || NO_MEETING_ID;
-
-    if (!(queueId in this.mettingsQueues)) {
-      this.mettingsQueues[meetingId] = new MettingMessageQueue(this.emitter, async, this.debug);
-    }
-
-    this.mettingsQueues[meetingId].add({
-      pattern,
-      channel,
-      eventName,
-      parsedMessage,
+    this._debug(`Publishing ${eventName} to ${channel}`);
+    return this.pub.publish(channel, JSON.stringify(message), (err, res) => {
+      if (err) {
+        Logger.error('Tried to publish to %s', channel, message);
+      }
     });
   }
 
-  destroyMeetingQueue(id) {
-    delete this.mettingsQueues[id];
+  handleSubscribe() {
+    if (this.didSendRequestEvent) return;
+
+    this.publish(this.config.channels.toBBBApps.meeting, REQUEST_EVENT);
+    this.didSendRequestEvent = true;
   }
 
-  on(...args) {
-    return this.emitter.on(...args);
+  handleMessage(pattern, channel, message = '') {
+    Logger.info(` 1.1: ${message}`);
+    try {
+      message = JSON.parse(message);
+    } catch (e) {}
+
+    const eventName = message.header.name;
+    const messagesWeIgnore = this.config.ignoredMessages || [];
+
+    if (!messagesWeIgnore.includes(eventName)) {
+      this._debug(`${eventName} added to queue`);
+
+      // Logger.info(`QUEUE | PROGRESS ${this.queue.progress()}% | LENGTH ${this.queue.length()}}`);
+
+      return this.queue.add({
+        pattern,
+        channel,
+        eventName,
+        message,
+      });
+    }
   }
 
-  publishVoiceMessage(channel, eventName, voiceConf, payload) {
-    const header = {
-      name: eventName,
-      voiceConf,
-    };
+  handleTask(data, next, failures) {
+    const { eventName, message } = data;
 
-    const envelope = makeEnvelope(channel, eventName, header, payload);
+    try {
+      message.callback = () => {}; // legacy noop function
 
-    return this.pub.publish(channel, envelope, RedisPubSub.handlePublishError);
+      this._debug(`${eventName} emitted`);
+      return this.emitter
+        .emitAsync(eventName, message)
+        .then((_) => {
+          this._debug(`${eventName} completed`);
+          return next();
+        })
+        .catch((reason) => {
+          this._debug(`${eventName} completed with error`);
+          Logger.error(`${eventName}: ${reason}`);
+          return next();
+        });
+    } catch (reason) {
+      this._debug(`${eventName} completed with error`);
+      Logger.error(`${eventName}: ${reason}`);
+      return next();
+    }
   }
 
-  publishSystemMessage(channel, eventName, payload) {
-    const header = {
-      name: eventName,
-    };
-
-    const envelope = makeEnvelope(channel, eventName, header, payload);
-
-    return this.pub.publish(channel, envelope, RedisPubSub.handlePublishError);
-  }
-
-  publishMeetingMessage(channel, eventName, meetingId, payload) {
-    const header = {
-      name: eventName,
-      meetingId,
-    };
-
-    const envelope = makeEnvelope(channel, eventName, header, payload);
-
-    return this.pub.publish(channel, envelope, RedisPubSub.handlePublishError);
-  }
-
-  publishUserMessage(channel, eventName, meetingId, userId, payload) {
-    const header = {
-      name: eventName,
-      meetingId,
-      userId,
-    };
-
-    const envelope = makeEnvelope(channel, eventName, header, payload);
-
-    return this.pub.publish(channel, envelope, RedisPubSub.handlePublishError);
+  _debug(message) {
+    if (this.config.debug) {
+      Logger.info(message);
+    }
   }
 }
 
