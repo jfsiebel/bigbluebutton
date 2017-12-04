@@ -8,6 +8,7 @@ import MessageForm from './message-form/component';
 import MessageList from './message-list/component';
 import ChatDropdown from './chat-dropdown/component';
 import Icon from '../icon/component';
+import Button from '/imports/ui/components/button/component';
 
 const ELEMENT_ID = 'chat-messages';
 
@@ -52,16 +53,23 @@ const Chat = (props) => {
           </Link>
         </div>
         {
-          chatID !== 'public' ?
-            <Link
-              to="/users"
-              role="button"
-              className={styles.closeIcon}
-              aria-label={intl.formatMessage(intlMessages.closeChatLabel, { 0: title })}
+          chatID == 'public' ? <ChatDropdown /> :
+          <Link
+            to="/users"
+            role="button"
+            aria-label={intl.formatMessage(intlMessages.closeChatLabel, { 0: title })}
+            tabIndex={-1}
             >
-              <Icon iconName="close" onClick={() => actions.handleClosePrivateChat(chatID)} />
-            </Link> :
-            <ChatDropdown />
+            <Button
+              className={styles.closeBtn}
+              label={intl.formatMessage(intlMessages.closeChatLabel, { 0: title })}
+              icon={'close'}
+              size={'md'}
+              hideLabel
+              onClick={() => actions.handleClosePrivateChat(chatID)}
+              aria-label={intl.formatMessage(intlMessages.closeChatLabel, { 0: title })}
+            />
+          </Link>
         }
       </header>
       <MessageList

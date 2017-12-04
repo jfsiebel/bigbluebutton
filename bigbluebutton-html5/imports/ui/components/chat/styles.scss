@@ -1,6 +1,9 @@
 @import "/imports/ui/stylesheets/mixins/focus";
 @import "/imports/ui/stylesheets/variables/_all";
 
+$icon-offset: -.4em;
+$square-side-length: 1.56rem;
+
 .chat {
   background-color: #fff;
   padding: $md-padding-x;
@@ -39,4 +42,24 @@
 .closeIcon {
   flex: 0 0;
   margin-left: $sm-padding-x / 2;
+}
+
+.closeBtn {
+  background-color: $color-white;
+  flex: 0 0;
+  padding: 0 0.25rem !important;
+
+  i {
+    font-size: 0.85em;
+    color: $color-gray-dark !important;
+    top: $icon-offset;
+  }
+
+  &:focus,
+  &:hover{
+    background-color: $color-white !important;
+    i{
+      color: $color-gray;
+    }
+  }
 }
