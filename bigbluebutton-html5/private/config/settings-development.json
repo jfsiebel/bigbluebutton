@@ -52,9 +52,9 @@
     },
 
     "kurento": {
-      "wsUrl": "HOST",
-      "chromeExtensionKey": "KEY",
-      "chromeExtensionLink": "LINK",
+      "wsUrl": "wss://anton3.blindside-dev.com/bbb-webrtc-sfu",
+      "chromeExtensionKey": "mbfngdphjegmlbfobcblikeefpidfncbINK",
+      "chromeExtensionLink": "https://chrome.google.com/webstore/detail/kurento-screenshare-test/mbfngdphjegmlbfobcblikeefpidfncbINK",
       "enableScreensharing": false,
       "enableVideo": false
     },
@@ -339,5 +339,3 @@
     }
   }
 }
-
-

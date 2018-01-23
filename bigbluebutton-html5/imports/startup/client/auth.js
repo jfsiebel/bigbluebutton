@@ -1,15 +1,15 @@
 import Auth from '/imports/ui/services/auth';
 import { log } from '/imports/ui/services/api';
+import queryString from 'query-string';
 
 // disconnected and trying to open a new connection
 const STATUS_CONNECTING = 'connecting';
 
-export function joinRouteHandler(nextState, replace, callback) {
-  const { sessionToken } = nextState.location.query;
+export function joinRouteHandler(nextState, history) {
+  const { sessionToken } = queryString.parse(nextState.search);
 
   if (!nextState || !sessionToken) {
-    replace({ pathname: '/error/404' });
-    callback();
+    history.replace("/error/404");
   }
 
   // use enter api to get params for the client
@@ -21,8 +21,7 @@ export function joinRouteHandler(nextState, replace, callback) {
       const { meetingID, internalUserID, authToken, logoutUrl } = data.response;
 
       Auth.set(meetingID, internalUserID, authToken, logoutUrl, sessionToken);
-      replace({ pathname: '/' });
-      callback();
+      history.replace("/");
     });
 }
 
@@ -69,21 +68,23 @@ function _addReconnectObservable() {
   });
 }
 
-export function authenticatedRouteHandler(nextState, replace, callback) {
+export function authenticatedRouteHandler(nextState, history) {
   const credentialsSnapshot = {
     meetingId: Auth.meetingID,
     requesterUserId: Auth.userID,
     requesterToken: Auth.token,
   };
 
-  if (Auth.loggedIn) {
-    callback();
-  }
+  // if (Auth.loggedIn) {
+  //   return;
+  // }
 
   _addReconnectObservable();
 
   Auth.authenticate()
-    .then(callback)
+    .then(() => {
+      return;
+    })
     .catch((reason) => {
       log('error', reason);
 
@@ -95,7 +96,7 @@ export function authenticatedRouteHandler(nextState, replace, callback) {
         }
       });
 
-      replace({ pathname: `/error/${reason.error}` });
-      callback();
+      history.replace(`/error/${reason.error}`);
+      return;
     });
 }

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { withRouter } from 'react-router';
+import { withRouter, Route, Redirect, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Auth from '/imports/ui/services/auth';
 import AppContainer from '/imports/ui/components/app/container';
+import ChatContainer from '/imports/ui/components/chat/container';
 import ErrorScreen from '/imports/ui/components/error-screen/component';
 import MeetingEnded from '/imports/ui/components/meeting-ended/component';
 import LoadingScreen from '/imports/ui/components/loading-screen/component';
+import UserListContainer from '/imports/ui/components/user-list/container';
 import Settings from '/imports/ui/services/settings';
 import IntlStartup from './intl';
 
@@ -57,7 +59,7 @@ class Base extends Component {
     const { loading, error } = this.state;
 
     const { subscriptionsReady, errorCode } = this.props;
-    const { endedCode } = this.props.params;
+    const { endedCode } = this.props.match.params;
 
     if (endedCode) return (<MeetingEnded code={endedCode} />);
 
@@ -69,7 +71,16 @@ class Base extends Component {
       return (<LoadingScreen>{loading}</LoadingScreen>);
     }
 
-    return (<AppContainer {...this.props} baseControls={stateControls} />);
+    return (
+      <div>
+        <Switch>
+          <Route exact name="users" path="users" components={{ userList: UserListContainer }} />
+          <Route name="chat" path="users/chat/:chatID" components={{ userList: UserListContainer, chat: ChatContainer, }} />
+          <Redirect from="users/chat" to="/users/chat/public" />
+        </Switch>
+        <AppContainer {...this.props} baseControls={stateControls} />
+      </div>
+    );
   }
 
   render() {
@@ -93,11 +104,11 @@ const SUBSCRIPTIONS_NAME = [
   'slides', 'captions', 'breakouts', 'voiceUsers', 'whiteboard-multi-user', 'screenshare',
 ];
 
-const BaseContainer = withRouter(withTracker(({ params, router }) => {
-  if (params.errorCode) return params;
+const BaseContainer = withRouter(withTracker(({ history, location, match }) => {
+  if (match.params.errorCode) return params;
 
   if (!Auth.loggedIn) {
-    return router.push('/logout');
+    return history.push('/logout');
   }
 
   const { credentials } = Auth;
@@ -106,7 +117,7 @@ const BaseContainer = withRouter(withTracker(({ params, router }) => {
   const subscriptionErrorHandler = {
     onError: (error) => {
       console.error(error);
-      return router.push('/logout');
+      return history.push('/logout');
     },
   };
 
