@@ -53,15 +53,15 @@ const intlMessages = defineMessages({
     id: 'app.settings.main.save.label.description',
     description: 'Settings modal save button label',
   },
-  dataSavingLabel: {
-    id: 'app.settings.dataSaving.label',
+  dataSavingTabLabel: {
+    id: 'app.settings.dataSavingTab.label',
     description: 'label for data savings tab',
   },
 });
 
 const propTypes = {
   intl: intlShape.isRequired,
-  video: PropTypes.object.isRequired,
+  dataSaving: PropTypes.object.isRequired,
   application: PropTypes.object.isRequired,
   cc: PropTypes.object.isRequired,
   participants: PropTypes.object.isRequired,
@@ -79,18 +79,18 @@ class Settings extends Component {
     super(props);
 
     const {
-      video, participants, cc, application,
+      dataSaving, participants, cc, application,
     } = props;
 
     this.state = {
       current: {
-        video: _.clone(video),
+        dataSaving: _.clone(dataSaving),
         application: _.clone(application),
         cc: _.clone(cc),
         participants: _.clone(participants),
       },
       saved: {
-        video: _.clone(video),
+        dataSaving: _.clone(dataSaving),
         application: _.clone(application),
         cc: _.clone(cc),
         participants: _.clone(participants),
@@ -158,8 +158,8 @@ class Settings extends Component {
             aria-labelledby="dataSavingTab"
             selectedClassName={styles.selected}
           >
-            <Icon iconName="more" className={styles.icon} />
-            <span id="dataSaving">{intl.formatMessage(intlMessages.dataSavingLabel)}</span>
+            <Icon iconName="network" className={styles.icon} />
+            <span id="dataSaving">{intl.formatMessage(intlMessages.dataSavingTabLabel)}</span>
           </Tab>
           {/* { isModerator ? */}
           {/* <Tab className={styles.tabSelector} aria-labelledby="usersTab"> */}
@@ -190,7 +190,7 @@ class Settings extends Component {
         </TabPanel>
         <TabPanel className={styles.tabPanel}>
           <DataSaving
-            settings={this.state.current.video}
+            settings={this.state.current.dataSaving}
             handleUpdateSettings={this.handleUpdateSettings}
           />
         </TabPanel>
