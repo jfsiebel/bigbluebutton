@@ -65,12 +65,14 @@ export function joinRouteHandler(nextState, replace, callback) {
         ? customdata.reduce((acc, data) => {
           const key = Object.keys(data).shift();
 
-          const handledHTML5Parameters = [
-            'html5recordingbot'
-          ];
-          if (handledHTML5Parameters.indexOf(key) === -1) {
-            return acc;
-          }
+          // const handledHTML5Parameters = [
+          //   'html5recordingbot',
+          //   'clientTitle',
+          // ];
+          //
+          // if (handledHTML5Parameters.indexOf(key) === -1) {
+          //   return acc;
+          // }
 
           let value = data[key];
           try {
@@ -79,7 +81,7 @@ export function joinRouteHandler(nextState, replace, callback) {
             log('error', `Caught: ${e.message}`);
           }
 
-          return { ...acc, [key]: value};
+          return { ...acc, [key]: value };
         }, {}) : {};
 
       SessionStorage.setItem(METADATA_KEY, metakeys);

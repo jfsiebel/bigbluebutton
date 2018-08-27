@@ -2,12 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import Langmap from 'langmap';
 import Users from '/imports/api/users';
 import fs from 'fs';
+import ini from 'ini';
 import Logger from './logger';
 import Redis from './redis';
 
 const AVAILABLE_LOCALES = fs.readdirSync('assets/app/locales');
+const INI_FILE = ini.parse(fs.readFileSync('assets/app/config/settings.ini', 'utf-8'));
 
 Meteor.startup(() => {
+  console.log(INI_FILE);
+  console.log(JSON.stringify(INI_FILE))
+
   const APP_CONFIG = Meteor.settings.public.app;
   const env = Meteor.isDevelopment ? 'development' : 'production';
   Logger.warn(`SERVER STARTED. ENV=${env}, nodejs version=${process.version}`, APP_CONFIG);

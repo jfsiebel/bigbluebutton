@@ -39,6 +39,7 @@
     "flat": "~4.0.0",
     "history": "~3.3.0",
     "immutability-helper": "~2.4.0",
+    "ini": "^1.3.5",
     "langmap": "0.0.16",
     "lodash": "~4.17.10",
     "makeup-screenreader-trap": "0.0.5",
