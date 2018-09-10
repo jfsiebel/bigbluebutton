@@ -18,7 +18,7 @@ export function joinRouteHandler(nextState, replace, callback) {
     replace({ pathname: '/error/404' });
     callback();
   }
-  
+
   // Old credentials stored in memory were being used when joining a new meeting
   Auth.clearCredentials();
 
@@ -123,7 +123,7 @@ export function joinRouteHandler(nextState, replace, callback) {
 
       replace({ pathname: path });
 
-      logger.info(JSON.stringify(clientInfo));
+      logger.info(clientInfo);
 
       return callback();
     });
