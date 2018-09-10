@@ -4,6 +4,7 @@ import { setCustomLogoUrl } from '/imports/ui/components/user-list/service';
 import { log } from '/imports/ui/services/api';
 import deviceInfo from '/imports/utils/deviceInfo';
 import logger from '/imports/startup/client/logger';
+import addUserSetting from '/imports/api/user-settings/addUserSetting';
 
 // disconnected and trying to open a new connection
 const STATUS_CONNECTING = 'connecting';
@@ -65,14 +66,24 @@ export function joinRouteHandler(nextState, replace, callback) {
         ? customdata.reduce((acc, data) => {
           const key = Object.keys(data).shift();
 
-          // const handledHTML5Parameters = [
-          //   'html5recordingbot',
-          //   'clientTitle',
-          // ];
-          //
-          // if (handledHTML5Parameters.indexOf(key) === -1) {
-          //   return acc;
-          // }
+          const handledHTML5Parameters = [
+            'html5recordingbot',
+            'clientTitle', //OK
+            'autoJoin', //OK
+            'listenOnlyMode', //OK
+            'forceListenOnly', //OK
+            'skipCheck', //OK
+            'lockOnJoin',
+            'askForFeedbackOnLogout', //OK
+            'displayBrandingArea', //OK
+            'enableScreensharing',
+            'enableVideo',
+            'enableVideoStats'
+          ];
+
+          if (handledHTML5Parameters.indexOf(key) === -1) {
+            return acc;
+          }
 
           let value = data[key];
           try {
@@ -80,6 +91,8 @@ export function joinRouteHandler(nextState, replace, callback) {
           } catch (e) {
             log('error', `Caught: ${e.message}`);
           }
+
+          addUserSetting(meetingID, internalUserID, key, value);
 
           return { ...acc, [key]: value };
         }, {}) : {};

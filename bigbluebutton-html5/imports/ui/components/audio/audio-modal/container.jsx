@@ -2,6 +2,7 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withModalMounter } from '/imports/ui/components/modal/service';
 import browser from 'browser-detect';
+import getFromConfig from '/imports/ui/services/config';
 import AudioModal from './component';
 import Service from '../service';
 
@@ -9,7 +10,9 @@ const AudioModalContainer = props => <AudioModal {...props} />;
 
 const APP_CONFIG = Meteor.settings.public.app;
 
-const { listenOnlyMode, forceListenOnly, skipCheck } = APP_CONFIG;
+const listenOnlyMode = getFromConfig('listenOnlyMode', APP_CONFIG.listenOnlyMode);
+const forceListenOnly = getFromConfig('forceListenOnly', APP_CONFIG.forceListenOnly);
+const skipCheck = getFromConfig('skipCheck', APP_CONFIG.skipCheck);
 
 export default withModalMounter(withTracker(({ mountModal }) =>
   ({

@@ -3,6 +3,7 @@ import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import injectWbResizeEvent from '/imports/ui/components/presentation/resize-wrapper/component';
+import getFromConfig from '/imports/ui/services/config';
 import { styles } from './styles';
 import CustomLogo from './custom-logo/component';
 import UserContent from './user-list-content/component';
@@ -29,7 +30,7 @@ const propTypes = {
   roving: PropTypes.func.isRequired,
   getGroupChatPrivate: PropTypes.func.isRequired,
 };
-const SHOW_BRANDING = Meteor.settings.public.app.branding.displayBrandingArea;
+const SHOW_BRANDING = getFromConfig('displayBrandingArea', Meteor.settings.public.app.branding.displayBrandingArea);
 const defaultProps = {
   compact: false,
   isBreakoutRoom: false,
