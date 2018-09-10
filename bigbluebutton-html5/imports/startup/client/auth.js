@@ -4,7 +4,7 @@ import { setCustomLogoUrl } from '/imports/ui/components/user-list/service';
 import { log } from '/imports/ui/services/api';
 import deviceInfo from '/imports/utils/deviceInfo';
 import logger from '/imports/startup/client/logger';
-import addUserSetting from '/imports/api/user-settings/addUserSetting';
+import { makeCall } from '/imports/ui/services/api';
 
 // disconnected and trying to open a new connection
 const STATUS_CONNECTING = 'connecting';
@@ -92,7 +92,7 @@ export function joinRouteHandler(nextState, replace, callback) {
             log('error', `Caught: ${e.message}`);
           }
 
-          addUserSetting(meetingID, internalUserID, key, value);
+          makeCall('addUserSetting', meetingID, internalUserID, key, value);
 
           return { ...acc, [key]: value };
         }, {}) : {};

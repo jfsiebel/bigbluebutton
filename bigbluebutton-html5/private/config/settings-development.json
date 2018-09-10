@@ -114,7 +114,8 @@
           "sendChat",
           "createGroupChat",
           "destroyGroupChat",
-          "sendGroupChatMsg"
+          "sendGroupChatMsg",
+          "addUserSetting"
         ]
       },
       "moderator": {

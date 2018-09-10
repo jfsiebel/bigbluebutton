@@ -1,18 +1,19 @@
 import UserSettings from '/imports/api/user-settings';
 import { check } from 'meteor/check';
+import Logger from '/imports/startup/server/logger';
 
-export default function addUserSetting(meetingId, userId, setting, settingValue) {
+export default function insertUserSetting(meetingId, userId, setting, value) {
 
     check(meetingId, String);
     check(userId, String);
     check(setting, String);
-    check(settingValue, Match.Any);
+    check(value, Match.Any);
 
     const document = {
       meetingId,
       userId,
       setting,
-      settingValue
+      value
     };
 
     const cb = (err) => {
