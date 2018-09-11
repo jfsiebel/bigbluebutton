@@ -1,12 +1,20 @@
-import SessionStorage from '/imports/ui/services/storage/session';
-
-const CUSTOM_DATA_KEY = 'BBB_customdata';
+import Auth from '/imports/ui/services/auth';
+import UserSettings from '/imports/api/user-settings';
 
 export default function getFromConfig(item, defaultValue) {
-    const data = SessionStorage.getItem(CUSTOM_DATA_KEY);
 
-    if (data !== null && data[item] !== undefined) {
-        return data[item];
+    const { meetingID, userID } = Auth;
+
+    const selector = {
+        meetingId: meetingID,
+        userId: userID,
+        setting: item
+    }
+
+    const setting = UserSettings.findOne(selector);
+
+    if (setting != undefined) {
+        return setting.value;
     }
 
     return defaultValue;

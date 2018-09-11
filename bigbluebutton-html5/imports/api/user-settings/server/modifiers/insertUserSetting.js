@@ -9,11 +9,19 @@ export default function insertUserSetting(meetingId, userId, setting, value) {
     check(setting, String);
     check(value, Match.Any);
 
-    const document = {
+    const selector = {
       meetingId,
       userId,
-      setting,
-      value
+      setting
+    };
+
+    const modifier = {
+      $set: {
+        meetingId,
+        userId,
+        setting,
+        value
+      }
     };
 
     const cb = (err) => {
@@ -24,5 +32,5 @@ export default function insertUserSetting(meetingId, userId, setting, value) {
       return Logger.verbose(`Upserted user configuration userId=${userId} meeting=${meetingId}`);
     };
 
-    return UserSettings.insert(document, cb);
+    return UserSettings.upsert(selector, modifier, cb);
 }

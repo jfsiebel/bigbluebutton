@@ -1,15 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { insertUserSetting } from "/imports/api/user-settings/server/modifiers/insertUserSetting";
+import insertUserSetting from "/imports/api/user-settings/server/modifiers/insertUserSetting";
 
 
-export default function addUserSetting(meetingID, userID, setting, value) {
-
-    check(meetingID, String);
-    check(userID, String);
+export default function addUserSetting(credentials, meetingId, userId, setting, value) {
+    check(meetingId, String);
+    check(userId, String);
     check(setting, String);
     check(value, Match.Any);
 
-    return insertUserSetting(meetingID, userID, setting, value);
-
+    return insertUserSetting(meetingId, userId, setting, value);
 }
