@@ -17,7 +17,7 @@ function voiceUser(credentials) {
 
 function publish(...args) {
   const boundVoiceUser = voiceUser.bind(this);
-  return mapToAcl('subscriptions.voiceUser', boundVoiceUser)(args);
+  return mapToAcl('subscriptions.voiceUsers', boundVoiceUser)(args);
 }
 
 Meteor.publish('voiceUsers', publish);
