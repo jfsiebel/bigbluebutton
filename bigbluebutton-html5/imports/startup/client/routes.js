@@ -13,6 +13,7 @@ const browserHistory = useRouterHistory(createHistory)({
 });
 
 const disconnect = () => {
+  console.log("OLAR");
   Meteor.disconnect();
 };
 
