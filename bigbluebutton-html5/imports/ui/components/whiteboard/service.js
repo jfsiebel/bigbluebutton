@@ -4,6 +4,7 @@ import WhiteboardMultiUser from '/imports/api/whiteboard-multi-user/';
 import { AnnotationsStreamer } from '/imports/api/annotations';
 import addAnnotationQuery from '/imports/api/annotations/addAnnotation';
 import logger from '/imports/startup/client/logger';
+import { makeCall } from '/imports/ui/services/api';
 import { isEqual } from 'lodash';
 
 const Annotations = new Mongo.Collection(null);
@@ -140,11 +141,8 @@ const proccessAnnotationsQueue = () => {
     return;
   }
 
-  // console.log('annotationQueue.length', annotationsQueue, annotationsQueue.length);
-  AnnotationsStreamer.emit('publish', {
-    credentials: Auth.credentials,
-    payload: annotationsQueue.filter(({ id }) => !discardedList.includes(id)),
-  });
+  annotationsQueue.forEach(annotation => makeCall('sendAnnotation', annotation));
+
   annotationsQueue = [];
   // ask tiago
   const delayPerc =

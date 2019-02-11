@@ -17,12 +17,6 @@ if (Meteor.isServer) {
   Annotations._ensureIndex({ id: 1 });
   Annotations._ensureIndex({ meetingId: 1, whiteboardId: 1, userId: 1 });
 
-  import sendAnnotation from './server/methods/sendAnnotation';
-
-  Streamer.on('publish', ({ credentials, payload }) => {
-    payload.forEach(annotation => sendAnnotation(credentials, annotation));
-  });
-
   Streamer.allowRead(function(eventName, ...args) {
     return true;
   });
