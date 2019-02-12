@@ -118,10 +118,12 @@ function increaseBrightness(realHex, percent) {
 
   /* eslint-disable no-bitwise, no-mixed-operators */
   return parseInt(((0 | (1 << 8) + r + ((256 - r) * percent) / 100).toString(16)).substr(1) +
-     ((0 | (1 << 8) + g + ((256 - g) * percent) / 100).toString(16)).substr(1) +
-     ((0 | (1 << 8) + b + ((256 - b) * percent) / 100).toString(16)).substr(1), 16);
+    ((0 | (1 << 8) + g + ((256 - g) * percent) / 100).toString(16)).substr(1) +
+    ((0 | (1 << 8) + b + ((256 - b) * percent) / 100).toString(16)).substr(1), 16);
   /* eslint-enable no-bitwise, no-mixed-operators */
 }
+
+let packetNumber = 0;
 
 let annotationsQueue = [];
 // How many packets we need to have to use annotationsBufferTimeMax
@@ -132,7 +134,7 @@ const annotationsBufferTimeMin = 30;
 const annotationsBufferTimeMax = 200;
 let annotationsSenderIsRunning = false;
 
-const proccessAnnotationsQueue = () => {
+const proccessAnnotationsQueue = async () => {
   annotationsSenderIsRunning = true;
   const queueSize = annotationsQueue.length;
 
@@ -141,7 +143,9 @@ const proccessAnnotationsQueue = () => {
     return;
   }
 
-  annotationsQueue.forEach(annotation => makeCall('sendAnnotation', annotation));
+  await makeCall('sendBulkAnnotations', annotationsQueue.filter(({ id }) => !discardedList.includes(id)), ++packetNumber);
+
+  // makeCall('sendBulkAnnotations', annotationsQueue.filter(({ id }) => !discardedList.includes(id)), ++packetNumber);
 
   annotationsQueue = [];
   // ask tiago

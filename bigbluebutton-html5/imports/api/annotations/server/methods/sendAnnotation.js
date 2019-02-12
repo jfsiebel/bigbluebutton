@@ -23,7 +23,7 @@ function isLastMessage(meetingId, annotation, userId) {
   return false;
 }
 
-export default function sendAnnotation(credentials, annotation) {
+export default function sendAnnotation(credentials, annotation, packetNumber) {
   const REDIS_CONFIG = Meteor.settings.private.redis;
   const CHANNEL = REDIS_CONFIG.channels.toAkkaApps;
   const EVENT_NAME = 'SendWhiteboardAnnotationPubMsg';
@@ -36,6 +36,7 @@ export default function sendAnnotation(credentials, annotation) {
   check(requesterToken, String);
   check(annotation, Object);
   check(whiteboardId, String);
+  check(packetNumber, Match.Maybe(Number));
 
   // We allow messages to pass through in 3 cases:
   // 1. When it's a standard message in presenter mode (Acl check)
@@ -55,6 +56,8 @@ export default function sendAnnotation(credentials, annotation) {
   const payload = {
     annotation,
   };
+
+  console.log('Sending annotation from packet', packetNumber);
 
   return RedisPubSub.publishUserMessage(CHANNEL, EVENT_NAME, meetingId, requesterUserId, payload);
 }
