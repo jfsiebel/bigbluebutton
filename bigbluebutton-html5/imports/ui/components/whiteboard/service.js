@@ -143,11 +143,10 @@ const proccessAnnotationsQueue = async () => {
     return;
   }
 
-  await makeCall('sendBulkAnnotations', annotationsQueue.filter(({ id }) => !discardedList.includes(id)), ++packetNumber);
+  const annotations = annotationsQueue.splice(0, queueSize);
 
-  // makeCall('sendBulkAnnotations', annotationsQueue.filter(({ id }) => !discardedList.includes(id)), ++packetNumber);
+  await makeCall('sendBulkAnnotations', annotations.filter(({ id }) => !discardedList.includes(id)), ++packetNumber);
 
-  annotationsQueue = [];
   // ask tiago
   const delayPerc =
     Math.min(annotationsMaxDelayQueueSize, queueSize) / annotationsMaxDelayQueueSize;
