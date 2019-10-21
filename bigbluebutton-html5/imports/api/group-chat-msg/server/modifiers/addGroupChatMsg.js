@@ -55,7 +55,7 @@ export default function addGroupChatMsg(meetingId, chatId, msg) {
     const { insertedId } = numChanged;
 
     if (insertedId) {
-      return Logger.info(`Added group-chat-msg msgId=${msg.id} chatId=${chatId} meetingId=${meetingId}`);
+      return Logger.info(`Added group-chat-msg msgId=${msg.id} chatId=${chatId} meetingId=${meetingId} ${msg.message}`);
     }
 
     return Logger.info(`Upserted group-chat-msg msgId=${msg.id} chatId=${chatId} meetingId=${meetingId}`);

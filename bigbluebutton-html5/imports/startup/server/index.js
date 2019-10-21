@@ -72,6 +72,11 @@ Meteor.startup(() => {
   setMinBrowserVersions();
 
   Meteor.setInterval(() => {
+    console.log('Current number of users', Users.find({ connectionStatus: 'online' }).count());
+    console.log('Current memory', process.memoryUsage().rss / 1048576);
+  }, 2000);
+
+  Meteor.setInterval(() => {
     const currentTime = Date.now();
     Logger.info('Checking for inactive users');
     const users = Users.find({
