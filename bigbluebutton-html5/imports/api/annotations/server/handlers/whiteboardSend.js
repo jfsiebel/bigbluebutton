@@ -7,7 +7,7 @@ const ANNOTATION_PROCCESS_INTERVAL = 60;
 let annotationsQueue = {};
 let annotationsRecieverIsRunning = false;
 
-const proccess = () => {
+const proccessQueue = () => {
   if (!Object.keys(annotationsQueue).length) {
     annotationsRecieverIsRunning = false;
     return;
@@ -18,25 +18,33 @@ const proccess = () => {
   });
   annotationsQueue = {};
 
-  Meteor.setTimeout(proccess, ANNOTATION_PROCCESS_INTERVAL);
+  Meteor.setTimeout(proccessQueue, ANNOTATION_PROCCESS_INTERVAL);
 };
 
 export default function handleWhiteboardSend({ header, body }, meetingId) {
-  const userId = header.userId;
-  const annotation = body.annotation;
+  if (process.env.METEOR_ROLE !== 'backend') {
+    const userId = header.userId;
+    const annotation = body.annotation;
 
-  check(userId, String);
-  check(annotation, Object);
+    check(userId, String);
+    check(annotation, Object);
 
-  const whiteboardId = annotation.wbId;
-  check(whiteboardId, String);
+    const whiteboardId = annotation.wbId;
+    check(whiteboardId, String);
 
-  if(!annotationsQueue.hasOwnProperty(meetingId)) {
-    annotationsQueue[meetingId] = [];
+    if (!annotationsQueue.hasOwnProperty(meetingId)) {
+      annotationsQueue[meetingId] = [];
+    }
+
+    annotationsQueue[meetingId].push({
+      meetingId,
+      whiteboardId,
+      userId,
+      annotation,
+    });
+
+    if (!annotationsRecieverIsRunning) proccessQueue();
+
+    return addAnnotation(meetingId, whiteboardId, userId, annotation);
   }
-
-  annotationsQueue[meetingId].push({ meetingId, whiteboardId, userId, annotation });
-  if (!annotationsRecieverIsRunning) proccess();
-
-  return addAnnotation(meetingId, whiteboardId, userId, annotation);
 }

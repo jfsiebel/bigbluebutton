@@ -134,9 +134,16 @@ class RedisPubSub {
 
     const channelsToSubscribe = this.config.subscribeTo;
 
-    channelsToSubscribe.forEach((channel) => {
-      this.sub.psubscribe(channel);
-    });
+    // Subscribe to from-akka-apps-wb-redis-channel in frontend
+    // in order to receive the messages and use the streamer.
+
+    if (process.env.METEOR_ROLE !== 'frontend') {
+      channelsToSubscribe.forEach((channel) => {
+        this.sub.psubscribe(channel);
+      });
+    } else {
+      this.sub.psubscribe('from-akka-apps-wb-redis-channel');
+    }
 
     this.debug(`Subscribed to '${channelsToSubscribe}'`);
   }

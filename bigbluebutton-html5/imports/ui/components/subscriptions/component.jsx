@@ -8,7 +8,7 @@ import Annotations from '/imports/api/annotations';
 import AnnotationsTextService from '/imports/ui/components/whiteboard/annotations/text/service';
 import AnnotationsLocal, { initAnnotationsStreamListener } from '/imports/ui/components/whiteboard/service';
 import { initCursorStreamListener } from '/imports/ui/components/cursor/service';
-
+import { makeCall } from '/imports/ui/services/api';
 
 const CHAT_CONFIG = Meteor.settings.public.chat;
 const ROLE_MODERATOR = Meteor.settings.public.user.role_moderator;
@@ -67,9 +67,10 @@ export default withTracker(() => {
     );
   });
 
-  let groupChatMessageHandler = {};
-  // let annotationsHandler = {};
+  makeCall('initializeAnnotationsStreamer');
+  makeCall('initializeCursorStreamer');
 
+  let groupChatMessageHandler = {};
   if (CHAT_ENABLED) {
     const chats = GroupChat.find({
       $or: [

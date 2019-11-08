@@ -11,7 +11,10 @@
     "start:dev": "ROOT_URL=http://127.0.0.1/html5client NODE_ENV=development meteor",
     "start:dev-fast-mongo": "env ROOT_URL=http://127.0.0.1/html5client MONGO_OPLOG_URL=mongodb://127.0.1.1/local MONGO_URL=mongodb://127.0.1.1/meteor PORT=3000 ROOT_URL=http://127.0.0.1/html5client NODE_ENV=development meteor",
     "test": "wdio ./tests/webdriverio/wdio.conf.js",
-    "lint": "eslint . --ext .jsx,.js"
+    "lint": "eslint . --ext .jsx,.js",
+    "start:backend": "env METEOR_ROLE=backend MONGO_OPLOG_URL=mongodb://127.0.1.1/local MONGO_URL=mongodb://127.0.1.1/meteor ROOT_URL=http://127.0.0.1/html5client PORT=3100 NODE_ENV=development meteor --port 3100",
+    "start:frontend": "env METEOR_ROLE=frontend MONGO_OPLOG_URL=mongodb://127.0.1.1/local MONGO_URL=mongodb://127.0.1.1/meteor ROOT_URL=http://127.0.0.1/html5client NODE_ENV=development meteor",
+    "start:all": "npm run start:backend & npm run start:frontend &"
   },
   "meteor": {
     "mainModule": {

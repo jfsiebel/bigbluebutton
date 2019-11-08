@@ -6,7 +6,7 @@ const CURSOR_PROCCESS_INTERVAL = 30;
 let cursorQueue = [];
 let cursorRecieverIsRunning = false;
 
-const proccess = () => {
+const proccessQueue = () => {
   if (!Object.keys(cursorQueue).length) {
     cursorRecieverIsRunning = false;
     return;
@@ -18,7 +18,7 @@ const proccess = () => {
   });
   cursorQueue = {};
 
-  Meteor.setTimeout(proccess, CURSOR_PROCCESS_INTERVAL);
+  Meteor.setTimeout(proccessQueue, CURSOR_PROCCESS_INTERVAL);
 };
 
 export default function handleCursorUpdate({ header, body }, meetingId) {
@@ -33,5 +33,5 @@ export default function handleCursorUpdate({ header, body }, meetingId) {
   }
   // overwrite since we dont care about the other positions
   cursorQueue[meetingId][userId] = body;
-  if (!cursorRecieverIsRunning) proccess();
+  if (!cursorRecieverIsRunning) proccessQueue();
 }
