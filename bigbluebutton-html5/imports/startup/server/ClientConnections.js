@@ -162,6 +162,8 @@ export default ClientConnectionsSingleton;
   * need to add loginTime: Date.now(), and  inactivityCheck: false, on addUser.js
   * need to re-add stopWatchingExternalVideo({ meetingId, requesterUserId: userId }); which we previously had in modifiers/removeUser.js
 
+  * on meteor restart we need to remove all users and re-establish the users that attempt to reconnect (I think this happens in prod environment as we drop the db)
+  * remove safely processForHTML5ServerOnly (new github issue)
  */
 
 

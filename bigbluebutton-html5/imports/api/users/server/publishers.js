@@ -64,7 +64,6 @@ function users(isModerator = false) {
   const options = {
     fields: {
       authToken: false,
-      lastPing: false,
     },
   };
 

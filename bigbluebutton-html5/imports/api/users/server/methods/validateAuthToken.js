@@ -1,9 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import RedisPubSub from '/imports/startup/server/redis';
 import Logger from '/imports/startup/server/logger';
-// import Users from '/imports/api/users';
-// import createDummyUser from '../modifiers/createDummyUser';
-// import setConnectionIdAndAuthToken from '../modifiers/setConnectionIdAndAuthToken';
 import ClientConnections from '/imports/startup/server/ClientConnections';
 import userLeaving from './userLeaving';
 import upsertValidationState from '/imports/api/auth-token-validation/server/modifiers/upsertValidationState';
@@ -31,22 +28,8 @@ export default function validateAuthToken(meetingId, requesterUserId, requesterT
   });
   this.setUserId(sessionId);
 
-  // const User = Users.findOne({
-  //   meetingId,
-  //   userId: requesterUserId,
-  // });
-
-  // if (User) {
-  //   // We already have a user with this sessionId, do not request ValidateAuthTokenReqMsg
-  //   Logger.warn(`We already have a user with this sessionId=${sessionId}, do not request ValidateAuthTokenReqMsg`);
-  //   return;
-  // }
-
-
   // new user
   upsertValidationState(meetingId, requesterUserId, ValidationStates.VALIDATING, connectionId);
-  // createDummyUser(meetingId, requesterUserId, requesterToken);
-  // setConnectionIdAndAuthToken(meetingId, requesterUserId, connectionId, requesterToken);
 
   const payload = {
     userId: requesterUserId,
