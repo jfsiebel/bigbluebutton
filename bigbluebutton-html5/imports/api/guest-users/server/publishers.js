@@ -1,16 +1,17 @@
 import GuestUsers from '/imports/api/guest-users/';
 import { Meteor } from 'meteor/meteor';
 import Logger from '/imports/startup/server/logger';
-import { extractCredentials } from '/imports/api/common/server/helpers';
+import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 
 function guestUsers() {
-  if (!this.userId) {
+  const tokenValidation = AuthTokenValidation.findOne({ connectionId: this.connection.id });
+  if (!tokenValidation || tokenValidation.validationStatus !== ValidationStates.VALIDATED) {
+    Logger.warn(`Publishing GuestUsers was requested by unauth connection ${this.connection.id}`);
     return GuestUsers.find({ meetingId: '' });
   }
+  const { meetingId, userId } = tokenValidation;
 
-  const { meetingId, requesterUserId } = extractCredentials(this.userId);
-
-  Logger.debug(`Publishing Slides for ${meetingId} ${requesterUserId}`);
+  Logger.debug(`Publishing GuestUsers for ${meetingId} ${userId}`);
 
   return GuestUsers.find({ meetingId });
 }

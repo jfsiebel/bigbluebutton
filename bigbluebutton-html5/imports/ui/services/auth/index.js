@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 
 import Storage from '/imports/ui/services/storage/session';
 
-import Users from '/imports/api/users';
 import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 import logger from '/imports/startup/client/logger';
 import { makeCall } from '/imports/ui/services/api';
@@ -278,45 +277,3 @@ class Auth {
 
 const AuthSingleton = new Auth();
 export default AuthSingleton;
-
-
-// validateAuthToken() {
-//   return new Promise((resolve, reject) => {
-//     let computation = null;
-//
-//     const validationTimeout = setTimeout(() => {
-//       computation.stop();
-//       reject({
-//         error: 401,
-//         description: 'Authentication timeout.',
-//       });
-//     }, CONNECTION_TIMEOUT);
-//
-//     Meteor.subscribe('current-user');
-//     makeCall('validateAuthToken', this.meetingID, this.userID, this.token);
-//
-//     Tracker.autorun((c) => {
-//       computation = c;
-//
-//       const selector = { meetingId: this.meetingID, userId: this.userID };
-//       const fields = {
-//         intId: 1, ejected: 1, validated: 1, connectionStatus: 1, userId: 1,
-//       };
-//       const User = Users.findOne(selector, { fields });
-//       // Wait in case the user is not in the collection yet or is a dummy user
-//       if (!User || !('intId' in User)) {
-//         return;
-//       }
-//
-//       if (User.validated === true && User.connectionStatus === 'online') {
-//         logger.info({ logCode: 'auth_service_init_streamers', extraInfo: { userId: User.userId } }, 'Calling init streamers functions');
-//         initCursorStreamListener();
-//         initAnnotationsStreamListener();
-//         computation.stop();
-//         clearTimeout(validationTimeout);
-//         // setTimeout to prevent race-conditions with subscription
-//         setTimeout(() => resolve(true), 100);
-//       }
-//     });
-//   });
-// }

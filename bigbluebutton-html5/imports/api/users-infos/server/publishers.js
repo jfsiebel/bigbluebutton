@@ -1,15 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import UserInfos from '/imports/api/users-infos';
 import Logger from '/imports/startup/server/logger';
-import { extractCredentials } from '/imports/api/common/server/helpers';
+import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 
 function userInfos() {
-  if (!this.userId) {
+  const tokenValidation = AuthTokenValidation.findOne({ connectionId: this.connection.id });
+
+  if (!tokenValidation || tokenValidation.validationStatus !== ValidationStates.VALIDATED) {
+    Logger.warn(`Publishing UserInfos was requested by unauth connection ${this.connection.id}`);
     return UserInfos.find({ meetingId: '' });
   }
-  const { meetingId, requesterUserId } = extractCredentials(this.userId);
+  const { meetingId, userId: requesterUserId } = tokenValidation;
 
-  Logger.debug(`Publishing user infos requested by user=${requesterUserId}`);
+  Logger.debug(`Publishing UserInfos for ${meetingId} ${requesterUserId}`);
 
   return UserInfos.find({ meetingId, requesterUserId });
 }

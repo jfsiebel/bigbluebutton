@@ -1,17 +1,20 @@
 import VoiceCallStates from '/imports/api/voice-call-states';
 import { Meteor } from 'meteor/meteor';
 import Logger from '/imports/startup/server/logger';
-import { extractCredentials } from '/imports/api/common/server/helpers';
+import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 
 function voiceCallStates() {
-  if (!this.userId) {
+  const tokenValidation = AuthTokenValidation.findOne({ connectionId: this.connection.id });
+
+  if (!tokenValidation || tokenValidation.validationStatus !== ValidationStates.VALIDATED) {
+    Logger.warn(`Publishing VoiceCallStates was requested by unauth connection ${this.connection.id}`);
     return VoiceCallStates.find({ meetingId: '' });
   }
-  const { meetingId, requesterUserId } = extractCredentials(this.userId);
+  const { meetingId, userId } = tokenValidation;
 
-  Logger.debug(`Publishing Voice Call States for ${meetingId} ${requesterUserId}`);
+  Logger.debug(`Publishing VoiceCallStates for ${meetingId} ${userId}`);
 
-  return VoiceCallStates.find({ meetingId, userId: requesterUserId });
+  return VoiceCallStates.find({ meetingId, userId });
 }
 
 function publish(...args) {

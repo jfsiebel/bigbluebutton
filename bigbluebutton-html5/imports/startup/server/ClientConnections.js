@@ -5,25 +5,7 @@ Meteor.onConnection((cb) => {
   console.error();
 });
 
-
-// Meteor.onConnection((connection) => {
-//   const connectionId = connection.id;
-//   console.error(`_1______________`);
-//   // console.error()
-//   console.error('_2______________')
-//   console.error(connection)
-//   console.error('_3______________', connectionId)
-//   connection.onClose(() => {
-//     console.log(`onClose ******************8`);
-//   });
-// });
-
-
 class ClientConnections {
-  // static getConnection(connectionId) {
-  //   return Meteor.server.sessions.get(connectionId);
-  // }
-
   constructor() {
     this.sessionIdToConnectionsMap = new Map();
     const getOurs = () => {
@@ -42,7 +24,7 @@ class ClientConnections {
     };
     setInterval(() => {
       console.error(`___________\n_____auto:${getAuto()} \n_____ours:${getOurs()}`);
-    }, 2500);
+    }, 9900);
     Logger.info('Created sessionIdToConnectionsMap=', this.sessionIdToConnectionsMap);
   }
 
@@ -67,25 +49,6 @@ class ClientConnections {
     }
     existingConnectionsArray.push(connection);
     this.sessionIdToConnectionsMap.set(sessionId, existingConnectionsArray);
-    // console.error(connection.onClose.toString())
-
-    // function (fn) {
-    //         var cb = Meteor.bindEnvironment(fn, "connection onClose callback");
-    //
-    //           if (self.inQueue) {
-    //             self._closeCallbacks.push(cb);
-    //           } else {
-    //             // if we're already closed, call the callback.
-    //              Meteor.defer(cb);
-    //          }
-    //      }
-
-    // console.error('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-    // console.error(conn);
-    // console.error(conn.id);
-    // console.error(conn.onClose.toString());
-    // console.error('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-
 
     console.error(`++++++++++++ addConnection for ${sessionId}     ${connection.id}      new`);
     return true; // truly added
@@ -164,6 +127,7 @@ export default ClientConnectionsSingleton;
 
   * on meteor restart we need to remove all users and re-establish the users that attempt to reconnect (I think this happens in prod environment as we drop the db)
   * remove safely processForHTML5ServerOnly (new github issue)
+  * Make sure the subscribers are only attempting if our user is validated (should be automatic)
  */
 
 

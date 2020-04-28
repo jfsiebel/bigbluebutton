@@ -71,7 +71,7 @@ Meteor.startup(() => {
   setMinBrowserVersions();
 
 
-  console.error(`Starting Meteor. We have these users: ${Users.find().count()}`)
+  console.error(`Starting Meteor. We have these users: ${Users.find().count()}`);
 
   Logger.warn(`SERVER STARTED.\nENV=${env},\nnodejs version=${process.version}\nCDN=${CDN_URL}\n`, APP_CONFIG);
 });
