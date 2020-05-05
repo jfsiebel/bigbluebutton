@@ -49,7 +49,6 @@ export default withTracker(() => ({
   isCaptionsAvailable: CaptionsService.isCaptionsAvailable(),
   isMeteorConnected: Meteor.status().connected,
   isPollingEnabled: POLLING_ENABLED,
-  isThereCurrentPresentation: Presentations.findOne({ meetingId: Auth.meetingID, current: true },
-    { fields: {} }),
+  isThereCurrentPresentation: Presentations.find({ meetingId: Auth.meetingID, current: true }, { fields: { _id: 1 } }).count(),
   allowExternalVideo: Meteor.settings.public.externalVideoPlayer.enabled,
 }))(injectIntl(ActionsBarContainer));

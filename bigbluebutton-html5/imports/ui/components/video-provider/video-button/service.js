@@ -10,7 +10,8 @@ const ROLE_MODERATOR = PUBLIC_SETTINGS.user.role_moderator;
 
 const isSharingVideo = () => {
   const userId = Auth.userID;
-  const videoStreams = VideoStreams.findOne({ userId }, { fields: {} });
+  const videoStreams = VideoStreams.find({ userId }, { fields: { _id: 1 } }).count();
+
   return !!videoStreams;
 };
 

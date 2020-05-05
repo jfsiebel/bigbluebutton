@@ -25,7 +25,7 @@ export default withTracker(() => {
       },
       role: ROLE_VIEWER,
       presenter: false,
-    }, { fields: {} }).count(),
+    }, { fields: { _id: 1 } }).count(),
     currentUserIsModerator: Users.findOne({ userId: Auth.userID },
       { fields: { role: 1 } }).role === ROLE_MODERATOR,
     lockSettings: meeting.lockSettingsProps,

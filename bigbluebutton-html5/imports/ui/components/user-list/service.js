@@ -202,8 +202,7 @@ const getUsers = () => {
   return users.sort(sortUsers);
 };
 
-const hasBreakoutRoom = () => Breakouts.find({ parentMeetingId: Auth.meetingID },
-  { fields: {} }).count() > 0;
+const hasBreakoutRoom = () => Breakouts.find({ parentMeetingId: Auth.meetingID }, { fields: { _id: 1 } }).count() > 0;
 
 const isMe = userId => userId === Auth.userID;
 
