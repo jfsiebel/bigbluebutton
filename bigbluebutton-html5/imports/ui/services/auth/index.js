@@ -220,7 +220,7 @@ class Auth {
 
       Tracker.autorun((c) => {
         computation = c;
-        makeCall('validateAuthToken', this.meetingID, this.userID, this.token);
+        makeCall('validateAuthToken', this.meetingID, this.userID, this.token, this.externUserID);
         Meteor.subscribe('current-user');
 
         const selector = { meetingId: this.meetingID, userId: this.userID };
