@@ -9,9 +9,8 @@ export default function validateAuthToken(meetingId, requesterUserId, requesterT
   const CHANNEL = REDIS_CONFIG.channels.toAkkaApps;
   const EVENT_NAME = 'ValidateAuthTokenReqMsg';
 
-  console.log('validateAuthToken', BannedUsers.store);
 
-  if (BannedUsers.has(meetingId, externalId)) return;
+  if (externalId && BannedUsers.has(meetingId, externalId)) return;
 
   // Store reference of methodInvocationObject ( to postpone the connection userId definition )
   pendingAuthenticationsStore.add(meetingId, requesterUserId, requesterToken, this);

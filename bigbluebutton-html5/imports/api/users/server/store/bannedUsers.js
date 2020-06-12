@@ -8,7 +8,8 @@ class BannedUsers {
 
   init(meetingId) {
     Logger.debug('BannedUsers :: init', meetingId);
-    !this.store[meetingId] ? this.store[meetingId] = new Set(): null;
+
+    if (!this.store[meetingId]) this.store[meetingId] = new Set();
   }
 
   add(meetingId, externalId) {
@@ -24,8 +25,9 @@ class BannedUsers {
   }
 
   has(meetingId, externalId) {
-    // Logger.debug('BannedUsers :: has', { meetingId, externalId });
-    console.error('BannedUsers :: has', this.store, { meetingId, externalId }, this.store[meetingId].has(externalId));
+    Logger.debug('BannedUsers :: has', { meetingId, externalId });
+    if (!this.store[meetingId]) this.store[meetingId] = new Set();
+
     return this.store[meetingId].has(externalId);
   }
 }
