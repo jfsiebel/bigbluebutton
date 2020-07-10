@@ -1,12 +1,11 @@
 import Logger from '/imports/startup/server/logger';
-import Users from '/imports/api/users';
 
 const logClient = function (type, logDescription, logCode = 'was_not_provided', extraInfo = {}, userInfo = {}) {
   const SERVER_CONN_ID = this.connection.id;
-  // const User = Users.findOne({ connectionId: SERVER_CONN_ID });
   const logContents = {
     logCode,
     logDescription,
+    connectionId: SERVER_CONN_ID,
     extraInfo,
     userInfo,
   };

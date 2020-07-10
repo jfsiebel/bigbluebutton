@@ -6,13 +6,27 @@ import ClientConnections from '/imports/startup/server/ClientConnections';
 import upsertValidationState from '/imports/api/auth-token-validation/server/modifiers/upsertValidationState';
 import removeValidationState from '/imports/api/auth-token-validation/server/modifiers/removeValidationState';
 import { ValidationStates } from '/imports/api/auth-token-validation';
+import pendingAuthenticationsStore from '../store/pendingAuthentications';
+import createDummyUser from '../modifiers/createDummyUser';
+
+const clearOtherSessions = (sessionUserId, current = false) => {
+  const serverSessions = Meteor.server.sessions;
+  Object.keys(serverSessions)
+    .filter(i => serverSessions[i].userId === sessionUserId)
+    .filter(i => i !== current)
+    .forEach(i => serverSessions[i].close());
+};
 
 export default function handleValidateAuthToken({ body }, meetingId) {
   const {
-    userId, valid, waitForApproval, authToken,
+    userId,
+    valid,
+    authToken,
+    waitForApproval,
   } = body;
 
   check(userId, String);
+  check(authToken, String);
   check(valid, Boolean);
   check(waitForApproval, Boolean);
 
@@ -21,7 +35,53 @@ export default function handleValidateAuthToken({ body }, meetingId) {
   const connection = ClientConnections.getActiveConnectionsFor(sessionId);
   const connectionId = connection ? connection.id : null;
   Logger.info(`ValidateAuthToken back to meteor. valid=${valid}  for ${sessionId}`);
+  const pendingAuths = pendingAuthenticationsStore.take(meetingId, userId, authToken);
 
+  if (!valid) {
+    pendingAuths.forEach(
+      (pendingAuth) => {
+        try {
+          const { methodInvocationObject } = pendingAuth;
+          // const connectionId = methodInvocationObject.connection.id;
+
+          // Schedule socket disconnection for this user, giving some time for client receiving the reason of disconnection
+          Meteor.setTimeout(() => {
+            methodInvocationObject.connection.close();
+          }, 2000);
+
+          Logger.info(`Closed connection ${methodInvocationObject.connection.id} due to invalid auth token.`);
+        } catch (e) {
+          Logger.error(`Error closing socket for meetingId '${meetingId}', userId '${userId}', authToken ${authToken}`);
+        }
+      },
+    );
+
+    return;
+  }
+
+  if (valid) {
+    // Define user ID on connections
+    pendingAuths.forEach(
+      (pendingAuth) => {
+        const { methodInvocationObject } = pendingAuth;
+
+        /* Logic migrated from validateAuthToken method ( postponed to only run in case of success response ) - Begin */
+        methodInvocationObject.setUserId(sessionId);
+
+        const User = Users.findOne({
+          meetingId,
+          userId,
+        });
+
+        if (!User) {
+          createDummyUser(meetingId, userId, authToken);
+        }
+
+        // setConnectionIdAndAuthToken(meetingId, userId, methodInvocationObject.connection.id, authToken);
+        /* End of logic migrated from validateAuthToken */
+      },
+    );
+  }
 
   /* start of CAN_BE_REMOVED_ONCE_FLASH_CLIENT_REMOVED */
   // const selector = {

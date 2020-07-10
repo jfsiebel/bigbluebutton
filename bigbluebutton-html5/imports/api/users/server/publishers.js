@@ -3,13 +3,63 @@ import { Meteor } from 'meteor/meteor';
 import Logger from '/imports/startup/server/logger';
 import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 
+import userLeaving from './methods/userLeaving';
+import { extractCredentials } from '/imports/api/common/server/helpers';
+
+
 const ROLE_MODERATOR = Meteor.settings.public.user.role_moderator;
 
-function users(isModerator = false) {
+function currentUser() {
+  if (!this.userId) {
+    return Users.find({ meetingId: '' });
+  }
+  const { meetingId, requesterUserId } = extractCredentials(this.userId);
+
+  check(meetingId, String);
+  check(requesterUserId, String);
+
+  const connectionId = this.connection.id;
+  const onCloseConnection = Meteor.bindEnvironment(() => {
+    try {
+      userLeaving(meetingId, requesterUserId, connectionId);
+    } catch (e) {
+      Logger.error(`Exception while executing userLeaving: ${e}`);
+    }
+  });
+
+  this._session.socket.on('close', _.debounce(onCloseConnection, 100));
+
+  const selector = {
+    meetingId,
+    userId: requesterUserId,
+  };
+
+  const options = {
+    fields: {
+      user: false,
+      authToken: false, // Not asking for authToken from client side but also not exposing it
+    },
+  };
+
+  return Users.find(selector, options);
+}
+
+function publishCurrentUser(...args) {
+  const boundUsers = currentUser.bind(this);
+  return boundUsers(...args);
+}
+
+Meteor.publish('current-user', publishCurrentUser);
+
+function users(role) {
   const tokenValidation = AuthTokenValidation.findOne({ connectionId: this.connection.id });
 
   if (!tokenValidation || tokenValidation.validationStatus !== ValidationStates.VALIDATED) {
     Logger.warn(`Publishing Users was requested by unauth connection ${this.connection.id}`);
+    return Users.find({ meetingId: '' });
+  }
+
+  if (!this.userId) {
     return Users.find({ meetingId: '' });
   }
   const { meetingId, userId } = tokenValidation;
@@ -22,15 +72,13 @@ function users(isModerator = false) {
     ],
   };
 
-  if (isModerator) {
-    const User = Users.findOne({ userId, meetingId });
-    if (!!User && User.role === ROLE_MODERATOR) {
-      selector.$or.push({
-        'breakoutProps.isBreakoutUser': true,
-        'breakoutProps.parentId': meetingId,
-        connectionStatus: 'online',
-      });
-    }
+  const User = Users.findOne({ userId, meetingId }, { fields: { role: 1 } });
+  if (!!User && User.role === ROLE_MODERATOR) {
+    selector.$or.push({
+      'breakoutProps.isBreakoutUser': true,
+      'breakoutProps.parentId': meetingId,
+      connectionStatus: 'online',
+    });
   }
 
   const options = {

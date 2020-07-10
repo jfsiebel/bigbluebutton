@@ -6,10 +6,16 @@ import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-v
 
 const ROLE_MODERATOR = Meteor.settings.public.user.role_moderator;
 
-function meetings(isModerator = false) {
+function meetings(role) {
+
+
   const tokenValidation = AuthTokenValidation.findOne({ connectionId: this.connection.id });
   if (!tokenValidation || tokenValidation.validationStatus !== ValidationStates.VALIDATED) {
     Logger.warn(`Publishing Meetings was requested by unauth connection ${this.connection.id}`);
+    return Meetings.find({ meetingId: '' });
+  }
+
+  if (!this.userId) {
     return Meetings.find({ meetingId: '' });
   }
   const { meetingId, userId } = tokenValidation;
@@ -22,19 +28,18 @@ function meetings(isModerator = false) {
     ],
   };
 
-  if (isModerator) {
-    const User = Users.findOne({ userId, meetingId });
-    if (!!User && User.role === ROLE_MODERATOR) {
-      selector.$or.push({
-        'meetingProp.isBreakout': true,
-        'breakoutProps.parentId': meetingId,
-      });
-    }
+  const User = Users.findOne({ userId, meetingId }, { fields: { role: 1 } });
+  if (!!User && User.role === ROLE_MODERATOR) {
+    selector.$or.push({
+      'meetingProp.isBreakout': true,
+      'breakoutProps.parentId': meetingId,
+    });
   }
 
   const options = {
     fields: {
       password: false,
+      'welcomeProp.modOnlyMessage': false,
     },
   };
 

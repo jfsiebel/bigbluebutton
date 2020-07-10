@@ -1,6 +1,8 @@
 /* eslint prefer-promise-reject-errors: 0 */
 import { Tracker } from 'meteor/tracker';
 
+import Users from '/imports/api/users';
+
 import Storage from '/imports/ui/services/storage/session';
 
 import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
@@ -207,7 +209,7 @@ class Auth {
   }
 
   validateAuthToken() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let computation = null;
 
       const validationTimeout = setTimeout(() => {
@@ -220,44 +222,80 @@ class Auth {
 
       Meteor.subscribe('authtokenvalidation', { meetingId: this.meetingID, userId: this.userID });
 
-      makeCall('validateAuthToken', this.meetingID, this.userID, this.token);
+      const result = await makeCall('validateAuthToken', this.meetingID, this.userID, this.token, this.externUserID);
+
+      if (!result) {
+        clearTimeout(validationTimeout);
+        reject({
+          error: 401,
+          description: 'User has been banned.',
+        });
+        return;
+      }
 
       Tracker.autorun((c) => {
         computation = c;
-        const AuthenticationTokenValidation = AuthTokenValidation.findOne();
-        console.error('autorun', AuthenticationTokenValidation)
+        Meteor.subscribe('current-user');
 
-        if (!AuthenticationTokenValidation) return;
-        console.error(AuthenticationTokenValidation.validationStatus)
+        const selector = { meetingId: this.meetingID, userId: this.userID };
+        const fields = {
+          intId: 1, ejected: 1, validated: 1, connectionStatus: 1, userId: 1,
+        };
+        const User = Users.findOne(selector, { fields });
+        // Skip in case the user is not in the collection yet or is a dummy user
+        if (!User || !('intId' in User)) {
+          logger.info({ logCode: 'auth_service_resend_validateauthtoken' }, 're-send validateAuthToken for delayed authentication');
+          makeCall('validateAuthToken', this.meetingID, this.userID, this.token);
 
-        switch (AuthenticationTokenValidation.validationStatus) {
-          case ValidationStates.INVALID:
-            reject({ error: 401, description: 'User has been ejected.' });
-            break;
-          case ValidationStates.VALIDATED:
-            logger.info({ logCode: 'auth_service_init_streamers', extraInfo: { userId: this.userID } }, 'Calling init streamers functions');
-            computation.stop();
-            initCursorStreamListener();
-            initAnnotationsStreamListener();
-            clearTimeout(validationTimeout);
-            // setTimeout to prevent race-conditions with subscription
-            // setTimeout(() => resolve(true), 100);
-            resolve(true);
-            break;
-          case ValidationStates.VALIDATING:
-            console.log('validating')
-            // computation.stop();
-            // return;
-            break;
-          case ValidationStates.NOT_VALIDATED:
-            console.log('not validated')
-
-            return;
-          default:
-            console.error(`001 WAITING ${AuthenticationTokenValidation.validationStatus}`, AuthenticationTokenValidation);
-            return;
+          return;
         }
-        console.error('now what')
+
+        if (User.ejected) {
+          computation.stop();
+          reject({
+            error: 401,
+            description: 'User has been ejected.',
+          });
+          return;
+        }
+
+        Tracker.autorun((c) => {
+          computation = c;
+          const AuthenticationTokenValidation = AuthTokenValidation.findOne();
+          console.error('autorun', AuthenticationTokenValidation);
+
+          if (!AuthenticationTokenValidation) return;
+          console.error(AuthenticationTokenValidation.validationStatus);
+
+          switch (AuthenticationTokenValidation.validationStatus) {
+            case ValidationStates.INVALID:
+              reject({ error: 401, description: 'User has been ejected.' });
+              break;
+            case ValidationStates.VALIDATED:
+              logger.info({ logCode: 'auth_service_init_streamers', extraInfo: { userId: this.userID } }, 'Calling init streamers functions');
+              computation.stop();
+              initCursorStreamListener();
+              initAnnotationsStreamListener();
+              clearTimeout(validationTimeout);
+              // setTimeout to prevent race-conditions with subscription
+              // setTimeout(() => resolve(true), 100);
+              resolve(true);
+              break;
+            case ValidationStates.VALIDATING:
+              console.log('validating');
+              // computation.stop();
+              // return;
+              break;
+            case ValidationStates.NOT_VALIDATED:
+              console.log('not validated');
+
+              return;
+            default:
+              console.error(`001 WAITING ${AuthenticationTokenValidation.validationStatus}`, AuthenticationTokenValidation);
+              return;
+          }
+          console.error('now what');
+        });
       });
     });
   }

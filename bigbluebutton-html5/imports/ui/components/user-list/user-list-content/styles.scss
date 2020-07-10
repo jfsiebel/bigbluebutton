@@ -32,6 +32,7 @@
     border-radius: none;
   }
 
+  overflow-x: hidden;
   outline-width: 1px !important;
   outline-color: transparent !important;
 }
@@ -62,7 +63,7 @@
 
   [dir="rtl"]  & {
     padding-right: var(--lg-padding-y);
-    padding-left: none;
+    padding-left: 0;
   }
 
   > i {
@@ -70,6 +71,11 @@
     font-size: 175%;
     color: var(--color-gray-light);
     flex: 0 0 2.2rem;
+    margin-right: var(--sm-padding-x);
+    [dir="rtl"]  & {
+      margin-right: 0;
+      margin-left: var(--sm-padding-x);
+    }
   }
 
   > span {
@@ -91,6 +97,12 @@
     }
   }
 
+  div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &:active {
     background-color: var(--list-item-bg-hover);
     box-shadow: inset 0 0 0 var(--border-size) var(--item-focus-border), inset 1px 0 0 1px var(--item-focus-border);
@@ -100,6 +112,11 @@
 .unreadMessages {
   @extend %flex-column;
   justify-content: center;
+  margin-left: auto;
+  [dir="rtl"] & {
+    margin-right: auto;
+    margin-left: 0;
+  }
 }
 
 .unreadMessagesText {
@@ -133,4 +150,19 @@
   @extend .lists;
   overflow: hidden;
   flex-shrink: 1;
+}
+
+.noteLock {
+  font-weight: 200;
+  font-size: var(--font-size-smaller);
+  color: var(--color-gray);
+
+  > i {
+    font-size: var(--font-size-xs);
+  }
+}
+
+.noteTitle {
+  font-weight: 400;
+  font-size: var(--font-size-small);
 }
