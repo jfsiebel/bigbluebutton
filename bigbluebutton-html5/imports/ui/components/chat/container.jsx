@@ -123,10 +123,14 @@ export default injectIntl(withTracker(({ intl }) => {
     messages = ChatService.getPrivateGroupMessages();
 
     const receiverUser = ChatService.getUser(chatID);
-    chatName = receiverUser.name;
-    systemMessageIntl = { 0: receiverUser.name };
+
+    const privateChat = ChatService.getPrivateChatByUsers(chatID);
+
+    chatName = receiverUser ? receiverUser.name : privateChat.participants.filter(u => u.id === chatID).pop().name;
+
+    systemMessageIntl = { 0: chatName };
     title = intl.formatMessage(intlMessages.titlePrivate, systemMessageIntl);
-    partnerIsLoggedOut = receiverUser.connectionStatus !== CONNECTION_STATUS;
+    partnerIsLoggedOut = receiverUser?.connectionStatus !== CONNECTION_STATUS;
 
     if (partnerIsLoggedOut) {
       const time = Date.now();

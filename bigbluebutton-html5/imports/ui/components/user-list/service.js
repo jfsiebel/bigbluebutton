@@ -27,13 +27,12 @@ const CLOSED_CHAT_LIST_KEY = 'closedChatList';
 const mapActiveChats = (chat) => {
   const currentUserId = Auth.userID;
 
-  if (chat.sender !== currentUserId) {
-    return chat.sender;
-  }
-
   const { chatId } = chat;
 
-  const userId = GroupChat.findOne({ chatId }).users.filter(user => user !== currentUserId);
+  const userId = GroupChat
+    .findOne({ chatId })
+    .participants
+    .filter(user => user.id !== currentUserId);
 
   return userId[0];
 };
@@ -248,18 +247,20 @@ const getActiveChats = (chatID) => {
     activeChats.push(chatID);
   }
 
-  activeChats = _.uniq(_.compact(activeChats));
+  activeChats = _.uniqBy(_.compact(activeChats), 'id');
 
-  activeChats = Users
-    .find({ userId: { $in: activeChats } })
-    .map((op) => {
-      const activeChat = op;
-      activeChat.unreadCounter = UnreadMessages.count(op.userId);
-      activeChat.name = op.name;
-      activeChat.isModerator = op.role === ROLE_MODERATOR;
-      activeChat.lastActivity = idsWithTimeStamp[`${op.userId}`];
-      return activeChat;
-    });
+  activeChats = activeChats.map(({ id, name }) => {
+    const user = Users.findOne({ userId: id }, { fields: { color: 1, role: 1 } });
+
+    return {
+      color: user?.color,
+      isModerator: user?.role === ROLE_MODERATOR,
+      lastActivity: idsWithTimeStamp[id],
+      name,
+      unreadCounter: UnreadMessages.count(id),
+      userId: id,
+    };
+  });
 
   const currentClosedChats = Storage.getItem(CLOSED_CHAT_LIST_KEY) || [];
   const filteredChatList = [];

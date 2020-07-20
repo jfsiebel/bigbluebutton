@@ -34,6 +34,9 @@ const CLOSED_CHAT_LIST_KEY = 'closedChatList';
 
 const getUser = userId => Users.findOne({ userId });
 
+const getPrivateChatByUsers = userId => GroupChat
+  .findOne({ users: { $all: [userId, Auth.userID] } });
+
 const getWelcomeProp = () => Meetings.findOne({ meetingId: Auth.meetingID },
   { fields: { welcomeProp: 1 } });
 
@@ -338,6 +341,7 @@ export default {
   getPublicGroupMessages,
   getPrivateGroupMessages,
   getUser,
+  getPrivateChatByUsers,
   getWelcomeProp,
   getScrollPosition,
   hasUnreadMessages,
