@@ -168,7 +168,6 @@ WebApp.connectHandlers.use('/feedback', (req, res) => {
     const user = Users.findOne({
       meetingId,
       userId,
-      connectionStatus: 'offline',
       authToken,
     });
 

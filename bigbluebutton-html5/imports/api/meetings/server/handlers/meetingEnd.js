@@ -16,18 +16,6 @@ export default function handleMeetingEnd({ body }) {
       return;
     }
     if (num) {
-      Users.update({ meetingId },
-        { $set: { connectionStatus: 'offline' } },
-        (error, numAffected) => {
-          if (error) {
-            Logger.error(`Error marking ending ${meetingType} users as offline: ${meetingId} ${err}`);
-            return;
-          }
-
-          if (numAffected) {
-            Logger.info(`Success marking ending ${meetingType} users as offline: ${meetingId}`);
-          }
-        });
       Meteor.setTimeout(() => { meetingHasEnded(meetingId); }, 10000);
     }
   };

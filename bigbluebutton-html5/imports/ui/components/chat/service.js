@@ -53,10 +53,10 @@ const mapGroupMessage = (message) => {
     const sender = Users.findOne({ userId: message.sender },
       {
         fields: {
-          color: 1, role: 1, connectionStatus: 1,
+          color: 1, role: 1,
         },
       });
-    const senderObject = sender || { color: '#7b1fa2', role: ROLE_VIEWER, connectionStatus: 'offline' };
+    const senderObject = sender ? { ...sender, connectionStatus: 'online' } : { color: '#7b1fa2', role: ROLE_VIEWER, connectionStatus: 'offline' };
     const {
       color,
       role,

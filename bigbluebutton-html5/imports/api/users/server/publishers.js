@@ -77,7 +77,6 @@ function users(role) {
     selector.$or.push({
       'breakoutProps.isBreakoutUser': true,
       'breakoutProps.parentId': meetingId,
-      connectionStatus: 'online',
     });
   }
 

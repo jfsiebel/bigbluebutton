@@ -30,7 +30,7 @@ export default function changePresenter(presenter, userId, meetingId, changedBy)
 
   const meeting = Meetings.findOne({ meetingId });
   if (meeting && meeting.externalVideoUrl) {
-    Logger.info(`ChangePresenter:There is external video being shared. Stopping it due to presenter change, ${meeting.externalVideoUrl}`);
+    Logger.info(`ChangePresenter: There is external video being shared. Stopping it due to presenter change, ${meeting.externalVideoUrl}`);
     stopWatchingExternalVideo({ meetingId, requesterUserId: userId });
   }
   return Users.update(selector, modifier, cb);
