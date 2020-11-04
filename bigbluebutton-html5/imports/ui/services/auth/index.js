@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 
 import Storage from '/imports/ui/services/storage/session';
 
-import Users from '/imports/api/users';
 import logger from '/imports/startup/client/logger';
 import { makeCall } from '/imports/ui/services/api';
 import { initAnnotationsStreamListener } from '/imports/ui/components/whiteboard/service';
@@ -15,6 +14,7 @@ const CONNECTION_TIMEOUT = Meteor.settings.public.app.connectionTimeout;
 
 class Auth {
   constructor() {
+    console.count('Auth.constructor');
     this._loggedIn = {
       value: false,
       tracker: new Tracker.Dependency(),
@@ -225,7 +225,7 @@ class Auth {
         });
       }, CONNECTION_TIMEOUT);
 
-      Meteor.subscribe('auth-token-validation', { meetingId: this.meetingID, userId: this.userID });
+      Meteor.subscribe('auth-token-validation', { authToken: this.token, meetingId: this.meetingID, userId: this.userID });
 
       const result = await makeCall('validateAuthToken', this.meetingID, this.userID, this.token, this.externUserID);
 
@@ -244,31 +244,14 @@ class Auth {
       Tracker.autorun((c) => {
         computation = c;
 
-        const selector = { meetingId: this.meetingID, userId: this.userID };
-        const fields = {
-          ejected: 1, intId: 1, validated: 1, userId: 1,
-        };
-        const User = Users.findOne(selector, { fields });
-        // Skip in case the user is not in the collection yet or is a dummy user
-        if (!User || !('intId' in User)) {
+        const authenticationTokenValidation = AuthTokenValidation.findOne();
+
+        if (!authenticationTokenValidation) {
           logger.info({ logCode: 'auth_service_resend_validateauthtoken' }, 're-send validateAuthToken for delayed authentication');
           makeCall('validateAuthToken', this.meetingID, this.userID, this.token);
 
           return;
         }
-
-        if (User.ejected) {
-          computation.stop();
-          reject({
-            error: 403,
-            description: 'User has been ejected.',
-          });
-          return;
-        }
-
-        const authenticationTokenValidation = AuthTokenValidation.findOne();
-
-        if (!authenticationTokenValidation) return;
 
         switch (authenticationTokenValidation.validationStatus) {
           case ValidationStates.INVALID:

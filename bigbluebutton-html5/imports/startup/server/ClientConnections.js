@@ -11,10 +11,6 @@ class ClientConnections {
       this.print();
     }, 30000);
 
-    // setTimeout(() => {
-    //   this.syncConnectionsWithServer();
-    // }, 10000);
-
   }
 
   add(sessionId, connection) {
@@ -59,7 +55,18 @@ class ClientConnections {
   }
 
   createMeetingConnections(meetingId) {
-    Logger.info(`Creating meeting in connections. meetingId=${meetingId}`);
+    Logger.info(
+      'Client connections create meeting called',
+      { logCode: 'client_connections_create_meeting_connections', extraInfo: { meetingId } }
+    );
+
+    if (!meetingId) {
+      Logger.error(`Error on create new meeting connections. meetingId=${meetingId}`,
+        { logCode: 'client_connections_create_meeting_connections_error', extraInfo: { meetingId } }
+      );
+
+      return;
+    }
 
     if (!this.exists(meetingId))
       return this.connections.set(meetingId, new Map());
@@ -108,9 +115,9 @@ class ClientConnections {
     return this.connections.delete(meetingId);
   }
 
-  syncConnectionsWithServer() {
-    console.error('syncConnectionsWithServer', Array.from(Meteor.server.sessions.keys()), Meteor.server);
-  }
+  // syncConnectionsWithServer() {
+  //   console.error('syncConnectionsWithServer', Array.from(Meteor.server.sessions.keys()), Meteor.server);
+  // }
 
 }
 

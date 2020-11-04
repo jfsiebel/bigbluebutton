@@ -38,7 +38,7 @@ export default function handleValidateAuthToken({ body }, meetingId) {
           const { methodInvocationObject } = pendingAuth;
           const connectionId = methodInvocationObject.connection.id;
 
-          upsertValidationState(meetingId, userId, ValidationStates.INVALID, connectionId);
+          upsertValidationState(meetingId, userId, ValidationStates.INVALID, connectionId, authToken);
 
           // Schedule socket disconnection for this user, giving some time for client receiving the reason of disconnection
           Meteor.setTimeout(() => {
@@ -75,7 +75,7 @@ export default function handleValidateAuthToken({ body }, meetingId) {
           createDummyUser(meetingId, userId, authToken);
         }
 
-        upsertValidationState(meetingId, userId, ValidationStates.VALIDATED, methodInvocationObject.connection.id);
+        upsertValidationState(meetingId, userId, ValidationStates.VALIDATED, methodInvocationObject.connection.id, authToken);
 
         /* End of logic migrated from validateAuthToken */
       },

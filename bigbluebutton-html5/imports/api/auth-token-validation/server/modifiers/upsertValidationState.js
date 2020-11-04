@@ -1,12 +1,13 @@
 import Logger from '/imports/startup/server/logger';
 import AuthTokenValidation from '/imports/api/auth-token-validation';
 
-export default function upsertValidationState(meetingId, userId, validationStatus, connectionId) {
+export default function upsertValidationState(meetingId, userId, validationStatus, connectionId, authToken) {
   const selector = {
     meetingId, userId, connectionId,
   };
   const modifier = {
     $set: {
+      authToken,
       meetingId,
       userId,
       connectionId,

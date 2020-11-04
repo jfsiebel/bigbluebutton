@@ -2,6 +2,7 @@ import { check } from 'meteor/check';
 import Logger from '/imports/startup/server/logger';
 import Users from '/imports/api/users';
 import clearUserInfoForRequester from '/imports/api/users-infos/server/modifiers/clearUserInfoForRequester';
+import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 
 export default function userEjected(meetingId, userId, ejectedReason) {
   check(meetingId, String);
@@ -33,5 +34,6 @@ export default function userEjected(meetingId, userId, ejectedReason) {
     return null;
   };
 
+  AuthTokenValidation.update({ meetingId, userId }, { $set: { validationStatus: ValidationStates.EJECTED } });
   return Users.update(selector, modifier, cb);
 }

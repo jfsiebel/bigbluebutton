@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import AuthTokenValidation from '/imports/api/auth-token-validation';
 import Logger from '/imports/startup/server/logger';
 
-function authTokenValidation({ meetingId, userId }) {
+function authTokenValidation({ authToken, meetingId, userId }) {
   const selector = {
+    authToken,
     meetingId,
     userId,
   };

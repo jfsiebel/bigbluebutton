@@ -3,10 +3,9 @@ import RedisPubSub from '/imports/startup/server/redis';
 import Logger from '/imports/startup/server/logger';
 import ClientConnections from '/imports/startup/server/ClientConnections';
 import upsertValidationState from '/imports/api/auth-token-validation/server/modifiers/upsertValidationState';
-import { ValidationStates } from '/imports/api/auth-token-validation';
+import AuthTokenValidation, { ValidationStates } from '/imports/api/auth-token-validation';
 import pendingAuthenticationsStore from '../store/pendingAuthentications';
 import BannedUsers from '../store/bannedUsers';
-import Users from '/imports/api/users';
 
 export default function validateAuthToken(meetingId, requesterUserId, requesterToken, externalId) {
   const REDIS_CONFIG = Meteor.settings.private.redis;
@@ -22,12 +21,7 @@ export default function validateAuthToken(meetingId, requesterUserId, requesterT
   }
 
   // Prevent users who have left or been ejected to use the same sessionToken again.
-  const isUserInvalid = Users.findOne({
-    meetingId,
-    userId: requesterUserId,
-    authToken: requesterToken,
-    $or: [{ ejected: true }, { loggedOut: true }],
-  });
+  const isUserInvalid = AuthTokenValidation.findOne({ meetingId, authToken: requesterToken, validationStatus: ValidationStates.EJECTED });
 
   if (isUserInvalid) {
     Logger.warn(`An invalid sessionToken tried to validateAuthToken meetingId=${meetingId} authToken=${requesterToken}`);
@@ -42,7 +36,7 @@ export default function validateAuthToken(meetingId, requesterUserId, requesterT
 
   // Store reference of methodInvocationObject ( to postpone the connection userId definition )
   pendingAuthenticationsStore.add(meetingId, requesterUserId, requesterToken, this);
-  upsertValidationState(meetingId, requesterUserId, ValidationStates.VALIDATING, this.connection.id);
+  upsertValidationState(meetingId, requesterUserId, ValidationStates.VALIDATING, this.connection.id, requesterToken);
 
   const payload = {
     userId: requesterUserId,
