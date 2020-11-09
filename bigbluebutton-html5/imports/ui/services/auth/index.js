@@ -14,7 +14,6 @@ const CONNECTION_TIMEOUT = Meteor.settings.public.app.connectionTimeout;
 
 class Auth {
   constructor() {
-    console.count('Auth.constructor');
     this._loggedIn = {
       value: false,
       tracker: new Tracker.Dependency(),
