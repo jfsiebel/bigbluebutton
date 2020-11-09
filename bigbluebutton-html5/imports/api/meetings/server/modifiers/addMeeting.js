@@ -11,6 +11,7 @@ import createCaptions from '/imports/api/captions/server/methods/createCaptions'
 import { addAnnotationsStreamer } from '/imports/api/annotations/server/streamer';
 import { addCursorStreamer } from '/imports/api/cursor/server/streamer';
 import BannedUsers from '/imports/api/users/server/store/bannedUsers';
+import ClientConnections from '/imports/startup/server/ClientConnections';
 
 export default function addMeeting(meeting) {
   const meetingId = meeting.meetingProp.intId;
@@ -165,6 +166,7 @@ export default function addMeeting(meeting) {
       createNote(meetingId);
       createCaptions(meetingId);
       BannedUsers.init(meetingId);
+      ClientConnections.createMeetingConnections(meetingId);
     }
 
     if (numChanged) {

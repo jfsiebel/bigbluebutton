@@ -9,8 +9,7 @@ class ClientConnections {
 
     setInterval(() => {
       this.print();
-    }, 30000);
-
+    }, 60000);
   }
 
   add(sessionId, connection) {
@@ -26,14 +25,14 @@ class ClientConnections {
     const { meetingId, requesterUserId: userId } = extractCredentials(sessionId);
 
     if (!this.exists(meetingId)) {
-      Logger.info(`Meeting not found in connections: meetingId=${meetingId}`);
+      Logger.debug(`Meeting not found in connections: meetingId=${meetingId}`);
       this.createMeetingConnections(meetingId);
     }
 
     const sessionConnections = this.connections.get(meetingId);
 
     if (sessionConnections.has(userId) && sessionConnections.get(userId).includes(connection.id)) {
-      Logger.info(`Connection already exists for user. userId=${userId} connectionId=${connection.id}`);
+      Logger.debug(`Connection already exists for user. userId=${userId} connectionId=${connection.id}`);
 
       return false;
     }
@@ -42,16 +41,15 @@ class ClientConnections {
       userLeaving(meetingId, userId, connection.id);
     }));
 
-    Logger.info(`Adding new connection for sessionId=${sessionId} connection=${connection.id}`);
+    Logger.debug(`Adding new connection for sessionId=${sessionId} connection=${connection.id}`);
 
     if (!sessionConnections.has(userId)) {
-      Logger.info(`Creating connections poll for ${userId}`);
+      Logger.debug(`Creating connections poll for userId=${userId} meetingId=${meetingId}`);
 
       sessionConnections.set(userId, []);
-      return sessionConnections.get(userId).push(connection.id);
-    } else {
-      return sessionConnections.get(userId).push(connection.id);
     }
+
+    return sessionConnections.get(userId).push(connection.id);
   }
 
   createMeetingConnections(meetingId) {
@@ -96,28 +94,33 @@ class ClientConnections {
   }
 
   removeClientConnection(sessionId, connectionId = null) {
-    Logger.info(`Removing connectionId for user. sessionId=${sessionId} connectionId=${connectionId}`);
+    Logger.info(`Removing connectionId for user. sessionId=${sessionId} connectionId=${connectionId}`,
+      { logCode: 'client_connections_remove_client_connection', extraInfo: { sessionId, connectionId } }
+    );
     const { meetingId, requesterUserId: userId } = extractCredentials(sessionId);
 
     const meetingConnections = this.connections.get(meetingId)
 
     if (meetingConnections?.has(userId)) {
+      Logger.debug(`Filtering connections for userId=${userId} meetingId=${meetingId}`);
       const filteredConnections = meetingConnections.get(userId).filter(c => c !== connectionId);
 
       return connectionId && filteredConnections.length ? meetingConnections.set(userId, filteredConnections) : meetingConnections.delete(userId);
     }
 
+    Logger.error(`Couldn't find active connection for user.`, { logCode: 'client_connections_remove_client_connection_error', extraInfo: { meetingId, userId } });
+
     return false;
   }
 
   removeMeeting(meetingId) {
-    Logger.debug(`Removing connections for meeting=${meetingId}`);
+    Logger.debug(`Removing connections for meeting=${meetingId}`, { logCode: 'client_connections_remove_meeting', extraInfo: { meetingId } });
     return this.connections.delete(meetingId);
   }
 
-  // syncConnectionsWithServer() {
-  //   console.error('syncConnectionsWithServer', Array.from(Meteor.server.sessions.keys()), Meteor.server);
-  // }
+  syncConnectionsWithServer() {
+    console.error('syncConnectionsWithServer', Array.from(Meteor.server.sessions.keys()), Meteor.server);
+  }
 
 }
 
