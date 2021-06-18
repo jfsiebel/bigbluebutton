@@ -10,7 +10,7 @@ import {
   getAvailableLocales,
 } from './service';
 
-const SettingsContainer = props => (
+const SettingsContainer = (props) => (
   <Settings {...props} />
 );
 
@@ -23,4 +23,5 @@ export default withTracker(() => ({
   isModerator: getUserRoles() === 'MODERATOR',
   showGuestNotification: showGuestNotification(),
   showToggleLabel: false,
+  selectedLayout: Session.get('layoutManagerLoaded'),
 }))(SettingsContainer);

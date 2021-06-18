@@ -16,6 +16,8 @@ export default function assignPresenter(userId) { // TODO-- send username from c
     check(requesterUserId, String);
     check(userId, String);
 
+    console.error('assignPresenter', userId);
+
     const User = Users.findOne({
       meetingId,
       userId,

@@ -421,6 +421,7 @@ public:
     autoSwapLayout: false
     hidePresentation: false
     showParticipantsOnLogin: true
+    enableBroadcastByModerator: true
   media:
     stunTurnServersFetchAddress: '/bigbluebutton/api/stuns'
     cacheStunTurnServers: true

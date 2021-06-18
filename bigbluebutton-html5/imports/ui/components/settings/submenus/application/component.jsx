@@ -7,12 +7,15 @@ import { defineMessages, injectIntl } from 'react-intl';
 import BaseMenu from '../base/component';
 import { styles } from '../styles';
 import VideoService from '/imports/ui/components/video-provider/service';
+import { LAYOUT_TYPE } from '/imports/ui/components/layout/enums';
 
 const MIN_FONTSIZE = 0;
 const SHOW_AUDIO_FILTERS = (Meteor.settings.public.app
   .showAudioFilters === undefined)
   ? true
   : Meteor.settings.public.app.showAudioFilters;
+
+const { enableBroadcastByModerator } = Meteor.settings.public.layout;
 
 const intlMessages = defineMessages({
   applicationSectionTitle: {
@@ -67,6 +70,30 @@ const intlMessages = defineMessages({
     id: 'app.submenu.application.paginationEnabledLabel',
     description: 'enable/disable video pagination',
   },
+  layoutOptionLabel: {
+    id: 'app.submenu.application.layoutOptionLabel',
+    description: 'layout options',
+  },
+  legacyLayout: {
+    id: 'app.layout.style.legacy',
+    description: 'label for legacy layout style',
+  },
+  customLayout: {
+    id: 'app.layout.style.custom',
+    description: 'label for custom layout style',
+  },
+  smartLayout: {
+    id: 'app.layout.style.smart',
+    description: 'label for smart layout style',
+  },
+  presentationFocusLayout: {
+    id: 'app.layout.style.presentationFocus',
+    description: 'label for presentationFocus layout style',
+  },
+  videoFocusLayout: {
+    id: 'app.layout.style.videoFocus',
+    description: 'label for videoFocus layout style',
+  },
 });
 
 class ApplicationMenu extends BaseMenu {
@@ -92,6 +119,7 @@ class ApplicationMenu extends BaseMenu {
       ],
       audioFilterEnabled: ApplicationMenu.isAudioFilterEnabled(props
         .settings.microphoneConstraints),
+      selectedLayout: props.selectedLayout,
     };
   }
 
@@ -277,6 +305,38 @@ class ApplicationMenu extends BaseMenu {
     );
   }
 
+  renderChangeLayout() {
+    const { intl } = this.props;
+    const { settings } = this.state;
+
+    return (
+      <div className={styles.row}>
+        <div className={styles.col} aria-hidden="true">
+          <div className={styles.formElement}>
+            <label htmlFor="layoutList" className={styles.label}>
+              {intl.formatMessage(intlMessages.layoutOptionLabel)}
+            </label>
+          </div>
+        </div>
+        <div className={styles.col}>
+          <div className={cx(styles.formElement, styles.pullContentRight)}>
+            <select
+              className={styles.select}
+              id="layoutList"
+              value={settings.selectedLayout}
+            >
+              <option key="legacy" value="legacy">{intl.formatMessage(intlMessages.legacyLayout)}</option>
+              {
+                Object.values(LAYOUT_TYPE)
+                  .map((layout) => <option key={layout} value={layout}>{intl.formatMessage(intlMessages[`${layout}Layout`])}</option>)
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const {
       allLocales, intl, showToggleLabel, displaySettingsStatus,
@@ -357,18 +417,20 @@ class ApplicationMenu extends BaseMenu {
                     elementClass={styles.select}
                     selectMessage={intl.formatMessage(intlMessages.languageOptionLabel)}
                   />
-                )
-                  : (
-                    <div className={styles.spinnerOverlay}>
-                      <div className={styles.bounce1} />
-                      <div className={styles.bounce2} />
-                      <div />
-                    </div>
-                  )
-                }
+                ) : (
+                  <div className={styles.spinnerOverlay}>
+                    <div className={styles.bounce1} />
+                    <div className={styles.bounce2} />
+                    <div />
+                  </div>
+                )}
               </span>
             </div>
           </div>
+
+          {
+            enableBroadcastByModerator ? this.renderChangeLayout() : null
+          }
 
           <hr className={styles.separator} />
           <div className={styles.row}>

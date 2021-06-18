@@ -349,6 +349,7 @@
     "app.submenu.application.languageOptionLabel": "Choose language",
     "app.submenu.application.noLocaleOptionLabel": "No active locales",
     "app.submenu.application.paginationEnabledLabel": "Video pagination",
+    "app.submenu.application.layoutOptionLabel": "Layout",
     "app.submenu.notification.SectionTitle": "Notifications",
     "app.submenu.notification.Desc": "Define how and what you will be notified.",
     "app.submenu.notification.audioAlertLabel": "Audio Alerts",
@@ -820,5 +821,10 @@
     "app.debugWindow.form.enableAutoarrangeLayoutLabel": "Enable Auto Arrange Layout",
     "app.debugWindow.form.enableAutoarrangeLayoutDescription": "(it will be disabled if you drag or resize the webcams area)",
     "app.debugWindow.form.chatLoggerLabel": "Test Chat Logger Levels",
-    "app.debugWindow.form.button.apply": "Apply"
+    "app.debugWindow.form.button.apply": "Apply",
+    "app.layout.style.legacy": "Legacy",
+    "app.layout.style.custom": "Custom",
+    "app.layout.style.smart": "Smart",
+    "app.layout.style.presentationFocus": "Focus on presentation",
+    "app.layout.style.videoFocus": "Focus on video"
 }
