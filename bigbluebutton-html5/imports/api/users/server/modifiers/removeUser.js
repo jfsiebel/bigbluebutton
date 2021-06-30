@@ -18,28 +18,35 @@ export default function removeUser(meetingId, userId) {
   check(meetingId, String);
   check(userId, String);
 
-  const userToRemove = Users.findOne({ userId, meetingId });
-
-  if (userToRemove) {
-    const { presenter } = userToRemove;
-    if (presenter) {
-      stopWatchingExternalVideoSystemCall({ meetingId, requesterUserId: 'system-presenter-was-removed' });
-    }
-  }
-
-  const selector = {
-    meetingId,
-    userId,
-  };
-
   try {
+    if (!process.env.BBB_HTML5_ROLE || process.env.BBB_HTML5_ROLE === 'frontend') {
+      const sessionUserId = `${meetingId}-${userId}`;
+      ClientConnections.removeClientConnection(`${meetingId}--${userId}`);
+      clearAllSessions(sessionUserId);
+
+      // we don't want to fully process the redis message in frontend
+      // since the backend is supposed to update Mongo
+      if (process.env.BBB_HTML5_ROLE === 'frontend') {
+        return;
+      }
+    }
+
+    const selector = {
+      meetingId,
+      userId,
+    };
+
+    const userToRemove = Users.findOne({ userId, meetingId });
+
+    if (userToRemove) {
+      const { presenter } = userToRemove;
+      if (presenter) {
+        stopWatchingExternalVideoSystemCall({ meetingId, requesterUserId: 'system-presenter-was-removed' });
+      }
+    }
+
     setloggedOutStatus(userId, meetingId, true);
     VideoStreams.remove({ meetingId, userId });
-    const sessionUserId = `${meetingId}-${userId}`;
-
-    ClientConnections.removeClientConnection(`${meetingId}--${userId}`);
-
-    clearAllSessions(sessionUserId);
 
     clearUserInfoForRequester(meetingId, userId);
 
